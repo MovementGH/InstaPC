@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="en" className="h-screen">
       <ClientAuthProvider>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 flex flex-col h-full`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background flex flex-col h-full`}
         >
           {children}
           <Toaster />

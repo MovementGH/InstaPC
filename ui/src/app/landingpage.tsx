@@ -12,16 +12,16 @@ import {
 export default function LandingPageUI() {
   const { redirectToOrgPage, redirectToLoginPage, redirectToSignupPage, redirectToAccountPage } = useRedirectFunctions();
   return (
-    <main className="flex flex-col grow justify-center items-center p-8 w-full bg-background from-blue-500 to-purple-600 text-white">
+    <main className="flex flex-col grow justify-center items-center p-8 w-full bg-background from-blue-500 to-purple-600 text-foreground">
       <div className="text-center max-w-3xl">
         <h1 className="text-4xl font-extrabold mb-4">
-          Welcome to <span className="text-orange-500">Insta PC</span>
+          Welcome to <span className="text-primary">Insta PC</span>
         </h1>
         <p className="text-lg mb-6">
           Create custom virtual desktop instances directly from your browser.
         </p>
         <div className="flex justify-center space-x-4 mb-8">
-          <button  onClick={() => redirectToLoginPage()}  className="bg-orange-500 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-orange-800 transition">
+          <button  onClick={() => redirectToLoginPage()}  className="bg-primary px-6 py-3 rounded-lg text-lg font-semibold hover:bg-primary/80 transition">
             Get Started
           </button>
         </div>
@@ -30,13 +30,13 @@ export default function LandingPageUI() {
         <AccordionItem value="item-1">
         <AccordionTrigger>Who is it for?</AccordionTrigger>
          <AccordionContent>
-            Whoever wants to play around with desktops through their browsers <span className="text-orange-500">instantly!</span>
+            Whoever wants to play around with desktops through their browsers <span className="text-primary">instantly!</span>
          </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
         <AccordionTrigger>How does it work?</AccordionTrigger>
          <AccordionContent>
-            Select your favourite Desktop OS and desired specs, and you're <span className="text-orange-500">Done!</span>
+            Select your favourite Desktop OS and desired specs, and you're <span className="text-primary">Done!</span>
          </AccordionContent>
         </AccordionItem>
         </Accordion>

@@ -12,7 +12,6 @@ export default function ShutdownVM({ id }: { id: string }) {
     }
 
     return (
-        isOnline &&
         <button title="Shutdown">
             <CirclePower className="text-orange-300 hover:text-red-600 size-4" onClick={tryShutdown} />
         </button>

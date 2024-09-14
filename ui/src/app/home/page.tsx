@@ -24,7 +24,7 @@ const Home = (props: WithAuthInfoProps) => {
       <Nav />
       <main className="flex flex-col items-center p-4 w-full">
         <div className="max-w-7xl w-full mt-12">
-          <h1 className="font-bold text-xl mb-4 text-gray-300">
+          <h1 className="font-bold text-xl mb-4 text-muted">
             Available PCs <Computer className="inline ml-1 size-5 mb-1" />
           </h1>
           <VMList />

@@ -25,7 +25,7 @@ export default function DeleteVM({ id, name, os }: { id: string, name: string, o
 
     return (
         <Dialog>
-            <DialogTrigger title={`Delete ${name} (${OS_UI_NAMES[os]})`}><Trash2 className="text-gray-400 hover:text-gray-300 size-4"/></DialogTrigger>
+            <DialogTrigger title={`Delete ${name} (${OS_UI_NAMES[os]})`}><Trash2 className="text-muted hover:text-muted/80 size-4"/></DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                 <DialogTitle>{`Are you sure you want to delete ${name} (${OS_UI_NAMES[os]})?`}</DialogTitle>

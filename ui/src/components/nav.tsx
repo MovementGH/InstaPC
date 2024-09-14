@@ -17,7 +17,7 @@ export default function Nav() {
   return (
     <nav className="flex flex-col grow items-center gap-8 p-6">
       <DropdownMenu>
-        <DropdownMenuTrigger className="outline-none"><CircleUser className="size-7 text-gray-400 hover:text-gray-300" /></DropdownMenuTrigger>
+        <DropdownMenuTrigger className="outline-none"><CircleUser className="size-7 text-muted hover:text-muted/80" /></DropdownMenuTrigger>
         <DropdownMenuContent className="mt-1 ml-4">
           <DropdownMenuLabel className="font-medium text-xs">Currently logged in as:</DropdownMenuLabel>
           <DropdownMenuLabel>{authInfo.user?.email}</DropdownMenuLabel>

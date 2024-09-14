@@ -7,7 +7,7 @@ const AuthUI = withAuthInfo((props: WithAuthInfoProps) => {
 
     if (!props.isLoggedIn) {
         return (
-                <div className="bg-white p-8 rounded-lg shadow-lg text-center w-96">
+                <div className="bg-foreground p-8 rounded-lg shadow-lg text-center w-96">
                     <div className="mb-6 p-4 rounded-md">
                         <h2 className="text-xl font-semibold text-orange-500">Hello!</h2>
                         <p className="text-gray-600 mt-2">Login with <span className=" font-semibold text-green-800">PropelAuth</span></p>
