@@ -4,19 +4,29 @@ import CreateVMCard from "@/components/create-vm-card";
 import { useEffect, useState } from "react";
 import { VMData } from "@/entities";
 import { API_ROUTE } from "@/lib/utils";
+import { OS } from "@/entities";
 
 export default function VMList() {
     const [vmCards, setVMCards] = useState<VMData[]>([]);
 
     function fetchVMs() {
-        fetch(`${API_ROUTE}/vms`)
-            .then(res => res.json())
-            .then((data) => {
-                setVMCards(data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        // fetch(`${API_ROUTE}/vms`)
+        //     .then(res => res.json())
+        //     .then((data) => {
+        //         setVMCards(data);
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //     });
+        setVMCards([{
+            name: "My PC",
+            os: OS.Win11,
+            memory: 4096,
+            cores: 2,
+            disk: 32,
+            id: "123",
+            owner: "234"
+        }]);
     }
 
     useEffect(() => {
