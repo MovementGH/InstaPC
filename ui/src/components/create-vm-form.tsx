@@ -25,7 +25,6 @@ import { Slider } from "./ui/slider";
 import { useToast } from "@/hooks/use-toast"
 import { capitalize } from "@/lib/utils";
 import { API_ROUTE } from "@/lib/utils";
-import { useRouter } from 'next/navigation';
 import { DialogClose } from "./ui/dialog";
 
 const MIN_MEM = 2048;
@@ -104,7 +103,6 @@ export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
   });
 
   const { toast } = useToast();
-  const router = useRouter();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const body = {
