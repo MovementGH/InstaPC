@@ -1,5 +1,6 @@
 import { Computer } from "lucide-react";
 import VMList from "@/components/vm-list";
+import CreateVMForm from "@/components/create-vm-form";
 
 export default function Home() {
   return (

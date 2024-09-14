@@ -1,9 +1,12 @@
 import Image, { StaticImageData } from "next/image";
 import { CirclePower, Plug, SquarePen, Trash2 } from "lucide-react";
+import DeleteVM from "./delete-vm";
+import { OS, OS_UI_NAMES } from "@/entities";
+import VMStatus from "./vm-status";
 
 export interface VMCardProps {
     name: string;
-    os: string;
+    os: OS;
     img: StaticImageData;
     id: string;
 }
@@ -27,8 +30,8 @@ export default function VMCard({ name, os, img, id }: VMCardProps) {
         </div>
         <div className="flex flex-row justify-between items-center w-full bg-gray-700 bottom-0 py-2 px-3 text-gray-300">
             <div className="flex items-center gap-2">
-                <Dot online={online} />
-                <p className="font-medium text-sm">{`${name} (${os})`}</p>
+                <VMStatus id={id}/>
+                <p className="font-medium text-sm">{`${name} (${OS_UI_NAMES[os]})`}</p>
             </div>
             <div className="flex gap-x-3">
                 {
@@ -40,9 +43,7 @@ export default function VMCard({ name, os, img, id }: VMCardProps) {
                 <button title="Edit">
                     <SquarePen className="text-gray-400 hover:text-gray-300 size-4"/>
                 </button>
-                <button title="Delete">
-                    <Trash2 className="text-gray-400 hover:text-gray-300 size-4"/>
-                </button>
+                <DeleteVM id={id} name={name} os={os} />
             </div>
         </div>
     </div>);
