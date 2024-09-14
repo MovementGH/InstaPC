@@ -1,12 +1,12 @@
 import { SquarePlus } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import CreateVMForm from "./create-vm-form";
 
 function CreateVMTrigger() {
@@ -22,17 +22,17 @@ function CreateVMTrigger() {
 
 export default function CreateVMCard({ fetchVMs }: { fetchVMs: () => void}) {
   return (
-    <Dialog>
-      <DialogTrigger>
+    <Sheet>
+      <SheetTrigger>
         <CreateVMTrigger />
-      </DialogTrigger>
-      <DialogContent onPointerDownOutside={(e) => e.preventDefault()} className="bg-gray-950">
-        <DialogHeader>
-          <DialogTitle>Create a New PC</DialogTitle>
-          <DialogDescription>Configure your new PC.</DialogDescription>
-        </DialogHeader>
+      </SheetTrigger>
+      <SheetContent onPointerDownOutside={(e) => e.preventDefault()} className="bg-gray-950">
+        <SheetHeader>
+          <SheetTitle>Create a New PC</SheetTitle>
+          <SheetDescription>Configure your new PC.</SheetDescription>
+        </SheetHeader>
         <CreateVMForm fetchVMs={fetchVMs} />
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }
