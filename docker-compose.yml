@@ -20,6 +20,7 @@ services:
     restart: unless-stopped
     ports:
       - "3001:3001"
+      - "3002:3002"
     environment:
       PUID: 1000
       PGID: 1000
@@ -36,12 +37,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-    networks:
-      - default
-      - vms
 
 networks:
   default:
-    name: instapc-services
-  vms:
-    name: instapc-vms
+    name: instapc
