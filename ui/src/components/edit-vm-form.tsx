@@ -4,13 +4,14 @@ import { OS, VMData, OS_UI_NAMES } from "@/entities";
 import { API_ROUTE } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast"
 
-export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
+export default function EditVMForm({ fetchVMs }: { fetchVMs: () => void}) {
   const { toast } = useToast();
 
   function onSubmit(values: z.infer<typeof vmFormSchema>) {
     const body = {
         "vm": values
     }
+    console.log("test");
 
     fetch(`${API_ROUTE}/vm`, { 
         method: "POST",
