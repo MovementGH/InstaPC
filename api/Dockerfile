@@ -1,4 +1,6 @@
-FROM node:hydrogen-alpine
+FROM docker:24
+
+RUN apk add --update nodejs npm
 
 COPY . .
 
