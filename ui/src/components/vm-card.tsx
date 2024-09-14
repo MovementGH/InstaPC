@@ -1,13 +1,38 @@
 import Image  from "next/image";
 import { Plug, SquarePen } from "lucide-react";
 import DeleteVM from "./delete-vm";
-import { OS_UI_NAMES, VMData } from "@/entities";
+import { OS_UI_NAMES, VMData, OS } from "@/entities";
 import VMStatus from "./vm-status";
-import WindowsImage from "public/windows-logo.jpg"
 import ShutdownVM from "./shutdown-vm";
 import useStatus from "@/hooks/use-status";
 import { API_ROUTE, VM_ROUTE } from "@/lib/utils";
 import EditVM from "./edit-vm";
+import Win11Img from "public/win11.png";
+import Win108Img from "public/win10-8.png";
+import Win7XPImg from "public/win7.png";
+import WinVistaImg from "public/winvista.png";
+import ArchImg from "public/arch-linux.png";
+import KaliImg from "public/kali.png";
+import UbuntuImg from "public/ubuntu.png";
+import MacImg from "public/mac.png";
+
+export const OS_CARD_IMG = {
+    [OS.Win11]: Win11Img,
+    [OS.Win10]: Win108Img,
+    [OS.Win8]: Win108Img,
+    [OS.Win7]: Win7XPImg,
+    [OS.WinVista]: WinVistaImg,
+    [OS.WinXP]: Win7XPImg,
+    [OS.Arch]: ArchImg,
+    [OS.ArchKDE]: ArchImg,
+    [OS.Kali]: KaliImg,
+    [OS.Ubuntu2004]: UbuntuImg,
+    [OS.Ubuntu2404]: UbuntuImg,
+    [OS.MacSonomoa]: MacImg,
+    [OS.MacVentura]: MacImg,
+    [OS.MacMonterey]: MacImg,
+    [OS.MacBigSur]: MacImg
+}
 
 export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs: () => void }) {
     const [isOnline, _] = useStatus(vmData.id);
@@ -23,7 +48,7 @@ export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs:
         <div onClick={tryConnect} className="relative group-hover:cursor-pointer flex flex-col justify-center items-center size-full gap-2" title={`Connect to ${vmData.name} (${OS_UI_NAMES[vmData.os]})`}>
             <Plug className="z-10 size-16 hidden group-hover:block"/>
             <Image
-                src={WindowsImage}
+                src={OS_CARD_IMG[vmData.os]}
                 className="absolute size-full object-cover group-hover:blur-sm group-hover:brightness-90"
                 alt="Windows VM"
             />

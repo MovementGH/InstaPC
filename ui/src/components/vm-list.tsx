@@ -10,23 +10,14 @@ export default function VMList() {
     const [vmCards, setVMCards] = useState<VMData[]>([]);
 
     function fetchVMs() {
-        // fetch(`${API_ROUTE}/vms`)
-        //     .then(res => res.json())
-        //     .then((data) => {
-        //         setVMCards(data);
-        //     })
-        //     .catch((err) => {
-        //         console.log(err);
-        //     });
-        setVMCards([{
-            name: "Colton's PC",
-            os: OS.MacVentura,
-            memory: 16384,
-            cores: 4,
-            disk: 64,
-            id: "123",
-            owner: "234"
-        }]);
+        fetch(`${API_ROUTE}/vms`)
+            .then(res => res.json())
+            .then((data) => {
+                setVMCards(data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     useEffect(() => {
