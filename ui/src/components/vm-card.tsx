@@ -7,8 +7,9 @@ import WindowsImage from "public/windows-logo.jpg"
 import ShutdownVM from "./shutdown-vm";
 import useStatus from "@/hooks/use-status";
 import { API_ROUTE, VM_ROUTE } from "@/lib/utils";
+import EditVM from "./edit-vm";
 
-export default function VMCard({ vmData }: { vmData: VMData }) {
+export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs: () => void }) {
     const [isOnline, _] = useStatus(vmData.id);
 
     function tryConnect() {
@@ -37,9 +38,7 @@ export default function VMCard({ vmData }: { vmData: VMData }) {
                 {
                     isOnline ? <ShutdownVM id={vmData.id} /> : null
                 }
-                <button title="Edit">
-                    <SquarePen className="text-muted hover:text-muted/80 size-4"/>
-                </button>
+                <EditVM vmData={vmData} fetchVMs={fetchVMs} />
                 <DeleteVM id={vmData.id} name={vmData.name} os={vmData.os} />
             </div>
         </div>

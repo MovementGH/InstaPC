@@ -19,11 +19,11 @@ export default function VMList() {
         //         console.log(err);
         //     });
         setVMCards([{
-            name: "My PC",
-            os: OS.Win11,
-            memory: 4096,
-            cores: 2,
-            disk: 32,
+            name: "Colton's PC",
+            os: OS.MacVentura,
+            memory: 16384,
+            cores: 4,
+            disk: 64,
             id: "123",
             owner: "234"
         }]);
@@ -45,7 +45,7 @@ export default function VMList() {
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-6 gap-x-4">
             {
                 vmCards.map((item: VMData, index: number) => (
-                    <VMCard vmData={item} key={index}/>
+                    <VMCard fetchVMs={fetchVMs} vmData={item} key={index}/>
                 ))
             }
             <CreateVMCard fetchVMs={fetchVMs} />
