@@ -2,16 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const child = require('child_process');
 const fs = require('fs');
-const morgan = require('morgan');
 const snowflakeId = require('snowflake-id');
- 
+const http = require('http');
+const cors = require('cors');
+const proxy = require('http-proxy').createProxyServer({ ws: true });
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
 // Initialize snowflake
 const snowflake = new snowflakeId.default({
     mid : 42,
     offset : (2019-1970)*31536000*1000
 });
-
-const app = express();
 
 const PORT = process.env.PORT || 3000;
 
@@ -40,6 +41,7 @@ const MACOS_VERSIONS = {
 }
 
 let vms = fs.existsSync('data/vms.json') ? JSON.parse(fs.readFileSync('data/vms.json').toString()) : [];
+let connections = {};
 
 /*=========================================
             Helper Functions
@@ -62,7 +64,7 @@ async function CreateVMContainer(vm) {
     console.log(`Creating VM "${vm.name}" (${vm.id})`);
 
     let creationCommand = '';
-    let genericConfig = `--name vm-${vm.id} --device /dev/kvm --cap-add NET_ADMIN --restart unless-stopped --stop-timeout 30 --network instapc-vms`;
+    let genericConfig = `--name vm-${vm.id} --device /dev/kvm --cap-add NET_ADMIN --restart unless-stopped --stop-timeout 30 --network instapc`;
     let env = `--env PUID=1000 --env PGID=1000 --env DISK_SIZE=${vm.disk}GB --env RAM_SIZE=${vm.memory}M --env CPU_CORES=${vm.cores}`;
 
     if(!fs.existsSync(`data/vms/${vm.id}`))
@@ -242,12 +244,31 @@ async function DeleteVM(req, res) {
     
 }
 
+async function PostVMConnect(req, res) {
+    StartVM(req.vm).then(() => {
+        connections[req.user] = {
+            vm: req.vm.id,
+            proxy: createProxyMiddleware({
+                target: `http://vm-${req.vm.id}:8006/`,
+                changeOrigin: true
+            })
+        };
+    
+        res.sendStatus(204);
+    }).catch(() => {
+        res.sendStatus(500);
+    });
+    
+}
+
 /*=========================================
             Express Setup
 =========================================*/
+const app = express();
+
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(morgan('dev')); // Log HTTP requests
 app.use(Authentication);
 app.use('/vm/:id', EnsureVMOwnership);
 
@@ -256,15 +277,32 @@ app.get('/vm/:id', GetVM);
 app.get('/vm/:id/status', GetVMStatus);
 app.post('/vm/:id/start', PostVMStart);
 app.post('/vm/:id/stop', PostVMStop);
+app.post('/vm/:id/connect', PostVMConnect);
 app.post('/vm', PostVM);
 app.patch('/vm/:id', PatchVM);
 app.delete('/vm/:id', DeleteVM);
 
 
-/*=========================================
-            Startup / Shutdown
-=========================================*/
-app.listen(PORT, async() => {
+let nextConnection;
+app.use('/', (req, res, next) => {
+    if(!connections[req.user])
+        return res.sendStatus(400);
+
+    nextConnection = connections[req.user];
+    connections[req.user].proxy(req, res, next);
+});
+
+const server = http.createServer(app);
+
+server.on('upgrade', function (req, socket, head) {
+    if(!nextConnection)
+        return socket.destroy();
+    
+    proxy.ws(req, socket, { ...head, target: `http://vm-${nextConnection.vm}:8006/`});
+    nextConnection = null;
+});
+
+server.listen(PORT, async() => {
     console.log(`InstaPC API is running on port ${PORT}`);
 });
 
