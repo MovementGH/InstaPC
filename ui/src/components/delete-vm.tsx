@@ -12,8 +12,9 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 import { Button } from "./ui/button";
+import { OS, OS_UI_NAMES } from "@/entities";
 
-export default function DeleteVM({ id, name, os }: { id: string, name: string, os: string }) {
+export default function DeleteVM({ id, name, os }: { id: string, name: string, os: OS }) {
     function tryDelete() {
         fetch(`${API_ROUTE}/vm/${id}`, {
             method: "DELETE"
@@ -24,10 +25,10 @@ export default function DeleteVM({ id, name, os }: { id: string, name: string, o
 
     return (
         <Dialog>
-            <DialogTrigger title={`Delete ${name} (${os})`}><Trash2 className="text-gray-400 hover:text-gray-300 size-4"/></DialogTrigger>
+            <DialogTrigger title={`Delete ${name} (${OS_UI_NAMES[os]})`}><Trash2 className="text-muted hover:text-muted/80 size-4"/></DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                <DialogTitle>{`Are you sure you want to delete ${name} (${os})?`}</DialogTitle>
+                <DialogTitle>{`Are you sure you want to delete ${name} (${OS_UI_NAMES[os]})?`}</DialogTitle>
                 <DialogDescription>
                     This action cannot be undone.
                 </DialogDescription>
@@ -40,8 +41,5 @@ export default function DeleteVM({ id, name, os }: { id: string, name: string, o
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-        // <button title={`Delete ${name} (${os})`} onClick={tryDelete}>
-        //     <Trash2 className="text-gray-400 hover:text-gray-300 size-4"/>
-        // </button>
     )
 }
