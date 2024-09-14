@@ -57,6 +57,7 @@ export async function POST(request) {
         try {
             // Extract JSON from the response
             const jsonMatch = botMessage.match(/\{[\s\S]*?\}/);
+            JSON.stringify(jsonMatch);
             if (jsonMatch) {
                 // Remove comments and parse JSON
                 const jsonString = jsonMatch[0].replace(/\/\/.*$/gm, '').trim();
