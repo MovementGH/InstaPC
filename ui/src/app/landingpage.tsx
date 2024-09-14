@@ -1,16 +1,26 @@
 "use client";
 import AuthUI from "./auth/authUI";
 import { withAuthInfo, useRedirectFunctions, useLogoutFunction, WithAuthInfoProps } from '@propelauth/react'
+import { useEffect } from "react";
 
-import {
+import { redirect } from "next/navigation";
+import{
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordian";
 
-export default function LandingPageUI() {
+function LandingPageUI(props: WithAuthInfoProps) {
   const { redirectToOrgPage, redirectToLoginPage, redirectToSignupPage, redirectToAccountPage } = useRedirectFunctions();
+
+  useEffect(() => {
+    if (props.isLoggedIn) {
+      redirect("/home");
+    }
+  }, [props.isLoggedIn, redirect]);
+
+  if(!props.isLoggedIn){
   return (
     <main className="flex flex-col grow justify-center items-center p-8 w-full bg-background from-blue-500 to-purple-600 text-white">
       <div className="text-center max-w-3xl">
@@ -21,8 +31,11 @@ export default function LandingPageUI() {
           Create custom virtual desktop instances directly from your browser.
         </p>
         <div className="flex justify-center space-x-4 mb-8">
-          <button  onClick={() => redirectToLoginPage()}  className="bg-orange-500 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-orange-800 transition">
+          <button  onClick={() => redirectToSignupPage()}  className="bg-orange-500 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-orange-800 transition">
             Get Started
+          </button>
+          <button  onClick={() => redirectToLoginPage()}  className="bg-green-500 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-green-800 transition">
+           Log In
           </button>
         </div>
       </div>
@@ -42,4 +55,9 @@ export default function LandingPageUI() {
         </Accordion>
     </main>
   );
+} 
+return null;
+
 }
+
+export default withAuthInfo(LandingPageUI);
