@@ -14,16 +14,36 @@ const snowflake = new snowflakeId.default({
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
 const DEFAULT_VM = {
     name: 'New VM',
-    os: 'windows 11',
+    os: 'windows-11',
     memory: 4096,
     cores: 2,
     disk: 32
 };
 
-const vms = JSON.parse(fs.readFileSync('vms.json').toString());
+const WINDOWS_VERSIONS = {
+    'windows-11': 'win11',
+    'windows-10': 'win10',
+    'windows-8': 'win8',
+    'windows-7': 'win7',
+    'windows-vista': 'vista',
+    'windows-xp': 'winxp',
+};
 
+const MACOS_VERSIONS = {
+    'macos-sonomoa': 'sonoma',
+    'macos-ventura': 'ventura',
+    'macos-monterey': 'monterey',
+    'macos-big-sur': 'big-sur',
+}
+
+let vms = fs.existsSync('data/vms.json') ? JSON.parse(fs.readFileSync('data/vms.json').toString()) : [];
+
+/*=========================================
+            Helper Functions
+=========================================*/
 function RunCommand(command) {
     return new Promise( (Resolve, Reject) => {
         child.exec(command, (error, stdout, stderr) => {
@@ -35,22 +55,47 @@ function RunCommand(command) {
     });
 }
 
+/*=========================================
+        Container Management
+=========================================*/
 async function CreateVMContainer(vm) {
-    let creationCommand = '';
-
-    if(vm.os == 'windows 11') {
-        creationCommand = `docker create --name vm-${vm.id} --env PUID=1000 --env PGID=1000 --env DISK_SIZE=${vm.disk} --env RAM_SIZE=${vm.memory} --env CPU_CORES=${vm.cores} --env USERNAME=vm --env PASSWORD=vm --device /dev/kvm --cap-add NET_ADMIN --restart unless-stopped --stop-timeout 30 --network instapc-vms dockurr/windows`;
-    }
-
     console.log(`Creating VM "${vm.name}" (${vm.id})`);
+
+    let creationCommand = '';
+    let genericConfig = `--name vm-${vm.id} --device /dev/kvm --cap-add NET_ADMIN --restart unless-stopped --stop-timeout 30 --network instapc-vms`;
+    let env = `--env PUID=1000 --env PGID=1000 --env DISK_SIZE=${vm.disk}GB --env RAM_SIZE=${vm.memory}M --env CPU_CORES=${vm.cores}`;
+
+    if(!fs.existsSync(`data/vms/${vm.id}`))
+        fs.mkdirSync(`data/vms/${vm.id}`);
+
+    if(vm.os in WINDOWS_VERSIONS) {
+        creationCommand = `docker create ${genericConfig} ${env} --volume /Bulk/Files/Desktop/Coding/VTHacks/data/vms/${vm.id}:/storage --env USERNAME=instapc --env PASSWORD=instapc --env VERSION=${WINDOWS_VERSIONS[vm.os]} dockurr/windows`;
+    } else if(vm.os in MACOS_VERSIONS) {
+        creationCommand = `docker create ${genericConfig} ${env} --volume /Bulk/Files/Desktop/Coding/VTHacks/data/vms/${vm.id}:/storage --env VERSION=${MACOS_VERSIONS[vm.os]} dockurr/macos`;
+    } else if(fs.existsSync(`data/images/${vm.os}.qcow2`)) {
+        if(!fs.existsSync(`data/vms/${vm.id}/data.qcow2`))
+            fs.copyFileSync(`data/images/${vm.os}.qcow2`, `data/vms/${vm.id}/data.qcow2`);
+
+        creationCommand = `docker create ${genericConfig} ${env} --volume /Bulk/Files/Desktop/Coding/VTHacks/data/vms/${vm.id}/data.qcow2:/boot.qcow2 qemux/qemu-docker`;
+    } else {
+        throw "Unknown VM Type";
+    }
 
     return await RunCommand(creationCommand);
 }
 
-function DeleteVMContainer(vm) {
+async function UpdateVMContainer(vm) {
+    // TODO: Test
+    await DeleteVMContainer(vm, false);
+    await CreateVMContainer(vm);
+}
+
+async function DeleteVMContainer(vm, cleanupFiles = true) {
+    await StopVM(vm);
+
     console.log(`Deleting VM "${vm.name}" (${vm.id})`);
 
-    return RunCommand(`docker container rm vm-${vm.id}`).catch(error => {
+    await RunCommand(`docker rm vm-${vm.id}`).catch(error => {
         if(error.stderr.match('No such container')) {
             CreateVMContainer(vm).then(() => StartVM(vm));
             return;
@@ -58,6 +103,10 @@ function DeleteVMContainer(vm) {
 
         throw error;
     });
+
+    if(cleanupFiles)
+        if(fs.existsSync(`data/vms/${vm.id}`))
+            fs.rmSync(`data/vms/${vm.id}`, { recursive: true, force: true });
 }
 
 async function StartVM(vm) {
@@ -81,13 +130,17 @@ function StopVM(vm) {
     
     return  RunCommand(`docker stop vm-${vm.id}`).catch(error => {
         if(error.stderr.match('No such container')) {
-            CreateVMContainer(vm).then(() => StartVMContainer(vm));
+            CreateVMContainer(vm).then(() => StartVM(vm));
             return;
         }
 
         throw error;
     });
 }
+
+/*=========================================
+        Middleware
+=========================================*/
 
 function Authentication(req, _, next) {
     req.user = '1';
@@ -107,6 +160,10 @@ function EnsureVMOwnership(req, res, next) {
     next();
 }
 
+
+/*=========================================
+            Routes
+=========================================*/
 async function GetVMs(req, res) {
     res.json(vms.filter(vm => vm.owner === req.user));
 }
@@ -148,14 +205,15 @@ async function PostVM(req, res) {
     req.body.vm.id = snowflake.generate();
     req.body.vm.owner = req.user;
 
+    vms.push(req.body.vm);
     CreateVMContainer(req.body.vm).then(() => {
         StartVM(req.body.vm).then(() => {
             res.json(req.body.vm);
         }).catch(() => {
-            req.sendStatus(500);
+            res.sendStatus(500);
         });
     }).catch(() => {
-        req.sendStatus(500);
+        res.sendStatus(500);
     })
 }
 
@@ -167,18 +225,26 @@ async function PatchVM(req, res) {
         if(req.body.vm[property] !== undefined)
             req.vm[property] = req.body.vm[property];
 
-    UpdateVM(req.vm).then(() => {
-        req.sendStatus(204);
+    UpdateVMContainer(req.vm).then(() => {
+        res.sendStatus(204);
     }).catch(() => {
-        req.sendStatus(500);
+        res.sendStatus(500);
     })
 }
 
 async function DeleteVM(req, res) {
-    vms = vms.filter(vm => vm.id !== req.vm.id);
-    DeleteVMContainer(req.vm);
+    DeleteVMContainer(req.vm).then(() => {
+        vms = vms.filter(vm => vm.id !== req.vm.id);
+        res.sendStatus(204);
+    }).catch(() => {
+        res.sendStatus(500);
+    })
+    
 }
 
+/*=========================================
+            Express Setup
+=========================================*/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev')); // Log HTTP requests
@@ -194,18 +260,14 @@ app.post('/vm', PostVM);
 app.patch('/vm/:id', PatchVM);
 app.delete('/vm/:id', DeleteVM);
 
-// Startup
+
+/*=========================================
+            Startup / Shutdown
+=========================================*/
 app.listen(PORT, async() => {
     console.log(`InstaPC API is running on port ${PORT}`);
-
-    console.log('Starting VMs...');
-
-    await Promise.all(vms.map(vm => StartVM(vm)));
-
-    console.log('VMs have been started');
 });
 
-// Shutdown
 [`SIGINT`, `SIGUSR1`, `SIGUSR2`, `uncaughtException`, `SIGTERM`].forEach((eventType) => {
     process.on(eventType, (...data) => {
         console.log(`Shutting down due to ${eventType}`);
@@ -215,7 +277,7 @@ app.listen(PORT, async() => {
 
         // Savews data
         console.log('Saving VM Data...');
-        fs.writeFileSync('vms.json', JSON.stringify(vms, null, 2));
+        fs.writeFileSync('data/vms.json', JSON.stringify(vms, null, 2));
 
         // Stops all VMs
         console.log('Stopping VMs...');

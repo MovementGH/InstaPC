@@ -1,5 +1,7 @@
 FROM node:hydrogen-alpine
 
+WORKDIR /ui
+
 COPY . .
 
 RUN npm i
