@@ -9,7 +9,7 @@ let conversationHistory = [];
 
 export async function POST(request) {
     console.log("POST function called");
-    const { question, isIntro } = await request.json();
+    const { question} = await request.json();
     console.log("Received question:", question);
 
     try {
