@@ -7,7 +7,7 @@ import {} from '@propelauth/react';
 
 export default function ClientAuthProvider({ children }: { children: React.ReactNode }) {
     return (
-    <AuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL!}>
+    <AuthProvider authUrl={process.env.NEXT_PUBLIC_PROPEL_AUTH_URL!}>
       {children}
     </AuthProvider>
   );
