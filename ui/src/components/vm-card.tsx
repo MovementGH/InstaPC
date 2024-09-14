@@ -7,14 +7,16 @@ import WindowsImage from "public/windows-logo.jpg"
 import ShutdownVM from "./shutdown-vm";
 import useStatus from "@/hooks/use-status";
 import { API_ROUTE } from "@/lib/utils";
+import { useAuthInfo } from '@propelauth/react';
 
 export default function VMCard({ vmData }: { vmData: VMData }) {
+    const authInfo = useAuthInfo();
     const [isOnline, _] = useStatus(vmData.id);
 
     function tryConnect() {
-        fetch(`${API_ROUTE}/vm/${vmData.id}/connect`, { method: 'POST' })
-            .then((_) => {
-                window.location.href = "https://vm.instapc.co";
+        fetch(`${API_ROUTE}/vm/${vmData.id}/connect`, { method: 'POST', headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`}, })
+            .then(result => result.json()).then(result => {
+                window.location.href = `https://vm.instapc.co/?session=${result}&resize=scale&autoconnect=true`;
             })
     }
 

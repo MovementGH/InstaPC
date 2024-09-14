@@ -7,6 +7,8 @@ const http = require('http');
 const cors = require('cors');
 const proxy = require('http-proxy').createProxyServer({ ws: true });
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const { initAuth } = require('@propelauth/express');
+const cookieParser = require('cookie-parser');
 
 // Initialize snowflake
 const snowflake = new snowflakeId.default({
@@ -23,6 +25,8 @@ const DEFAULT_VM = {
     cores: 2,
     disk: 32
 };
+
+const { requireUser } = initAuth({ authUrl: process.env.PROPEL_AUTH_URL, apiKey: process.env.PROPEL_AUTH_KEY });
 
 const WINDOWS_VERSIONS = {
     'windows-11': 'win11',
@@ -145,7 +149,7 @@ function StopVM(vm) {
 =========================================*/
 
 function Authentication(req, _, next) {
-    req.user = '1';
+    req.user.userId = '1';
     next();
 }
 
@@ -155,7 +159,7 @@ function EnsureVMOwnership(req, res, next) {
     if(!vm)
         return res.sendStatus(404);
 
-    if(vm.owner !== req.user)
+    if(vm.owner !== req.user.userId)
         return res.sendStatus(403);
 
     req.vm = vm;
@@ -167,7 +171,7 @@ function EnsureVMOwnership(req, res, next) {
             Routes
 =========================================*/
 async function GetVMs(req, res) {
-    res.json(vms.filter(vm => vm.owner === req.user));
+    res.json(vms.filter(vm => vm.owner === req.user.userId));
 }
 
 async function GetVM(req, res) {
@@ -205,7 +209,7 @@ async function PostVM(req, res) {
         ...req.body.vm
     };
     req.body.vm.id = snowflake.generate();
-    req.body.vm.owner = req.user;
+    req.body.vm.owner = req.user.userId;
 
     vms.push(req.body.vm);
     CreateVMContainer(req.body.vm).then(() => {
@@ -246,15 +250,17 @@ async function DeleteVM(req, res) {
 
 async function PostVMConnect(req, res) {
     StartVM(req.vm).then(() => {
-        connections[req.user] = {
+        const id = snowflake.generate();
+        connections[id] = {
             vm: req.vm.id,
+            user: req.user.userId,
             proxy: createProxyMiddleware({
                 target: `http://vm-${req.vm.id}:8006/`,
                 changeOrigin: true
             })
         };
     
-        res.sendStatus(204);
+        res.json(id);
     }).catch(() => {
         res.sendStatus(500);
     });
@@ -269,27 +275,34 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(Authentication);
+app.use(cookieParser());
+app.use('/vm/', requireUser);
+app.use('/vms/', requireUser);
 app.use('/vm/:id', EnsureVMOwnership);
-
 app.get('/vms', GetVMs);
 app.get('/vm/:id', GetVM);
 app.get('/vm/:id/status', GetVMStatus);
 app.post('/vm/:id/start', PostVMStart);
 app.post('/vm/:id/stop', PostVMStop);
 app.post('/vm/:id/connect', PostVMConnect);
-app.post('/vm', PostVM);
+app.post('/vm/', PostVM);
 app.patch('/vm/:id', PatchVM);
 app.delete('/vm/:id', DeleteVM);
 
 
-let nextConnection;
+let nextConnection = 0;
 app.use('/', (req, res, next) => {
-    if(!connections[req.user])
-        return res.sendStatus(400);
+    if(req.query.session) {
+        res.cookie('session', req.query.session);
+        req.cookies.session = req.query.session;
+        nextConnection = connections[req.cookies.session];
+    } else if(!req.cookies.session)
+        return res.sendStatus(401);
 
-    nextConnection = connections[req.user];
-    connections[req.user].proxy(req, res, next);
+    if(!connections[req.cookies.session])
+        return res.sendStatus(404);
+
+    connections[req.cookies.session].proxy(req, res, next);
 });
 
 const server = http.createServer(app);

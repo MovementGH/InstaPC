@@ -13,11 +13,14 @@ import {
   } from "@/components/ui/dialog"
 import { Button } from "./ui/button";
 import { OS, OS_UI_NAMES } from "@/entities";
+import { useAuthInfo } from '@propelauth/react';
 
 export default function DeleteVM({ id, name, os }: { id: string, name: string, os: OS }) {
+    const authInfo = useAuthInfo();
     function tryDelete() {
         fetch(`${API_ROUTE}/vm/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
         })
             .then((res) => console.log(res.status))
             .catch((err) => console.log(err))
