@@ -1,5 +1,6 @@
 "use client"
 import { withAuthInfo, useRedirectFunctions, useLogoutFunction, WithAuthInfoProps } from '@propelauth/react'
+import { redirect } from 'next/navigation';
 
 import { useRouter } from "next/router";
 import { useEffect } from 'react';
@@ -29,6 +30,9 @@ const AuthUI = withAuthInfo((props: WithAuthInfoProps) => {
                     </button>
                 </div>
         );
+    }
+    else {
+        redirect("/home")
     }
 });
 
