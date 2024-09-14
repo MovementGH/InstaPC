@@ -13,7 +13,10 @@ const Home = (props: WithAuthInfoProps) => {
     }
     return (
         <div className="max-w-7xl w-full mt-12">
-         <div>
+         
+        <h1 className="font-bold text-xl mb-4 text-gray-300">Available PCs <Computer className="inline ml-1 size-5 mb-1"/></h1>
+            <VMList />
+        <div>
         {logoutbttn ? (
           <div className="flex items-center space-x-4">
             <p className="text-green-500">Current Session: {props.user?.email}</p>
@@ -25,8 +28,6 @@ const Home = (props: WithAuthInfoProps) => {
             </button>
             </div>) : <></>}
           </div>
-        <h1 className="font-bold text-xl mb-4 text-gray-300">Available PCs <Computer className="inline ml-1 size-5 mb-1"/></h1>
-            <VMList />
         </div>
     )
 
