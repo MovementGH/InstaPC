@@ -1,12 +1,10 @@
 import {z} from "zod";
 import VMForm, { vmFormSchema } from "./vm-form";
-import { OS, VMData, OS_UI_NAMES } from "@/entities";
-import { API_ROUTE } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast"
+import { OS, VMData } from "@/entities";
+import { API_ROUTE, getDateString } from "@/lib/utils";
+import { toast } from "sonner"
 
 export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
-  const { toast } = useToast();
-
   function onSubmit(values: z.infer<typeof vmFormSchema>) {
     const body = {
         "vm": values
@@ -19,8 +17,8 @@ export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
     })
         .then((res) => {
             if (res.status == 200) {
-                toast({
-                    description: `Succsefully created PC ${values.name} (${OS_UI_NAMES[values.os]})`
+                toast(`Succsefully created PC '${values.name}'`, {
+                  description: getDateString(),
                 });
                 fetchVMs();
             }

@@ -6,7 +6,7 @@ import VMStatus from "./vm-status";
 import WindowsImage from "public/windows-logo.jpg"
 import ShutdownVM from "./shutdown-vm";
 import useStatus from "@/hooks/use-status";
-import { API_ROUTE } from "@/lib/utils";
+import { API_ROUTE, VM_ROUTE } from "@/lib/utils";
 
 export default function VMCard({ vmData }: { vmData: VMData }) {
     const [isOnline, _] = useStatus(vmData.id);
@@ -14,7 +14,7 @@ export default function VMCard({ vmData }: { vmData: VMData }) {
     function tryConnect() {
         fetch(`${API_ROUTE}/vm/${vmData.id}/connect`, { method: 'POST' })
             .then((_) => {
-                window.location.href = "https://vm.instapc.co";
+                window.location.href = VM_ROUTE;
             })
     }
 
