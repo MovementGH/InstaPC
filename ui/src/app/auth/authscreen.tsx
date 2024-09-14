@@ -1,7 +1,7 @@
 "use client"
-import { withAuthInfo, useRedirectFunctions, useLogoutFunction, WithAuthInfoProps } from '@propelauth/nextjs/client'
+import { withAuthInfo, useRedirectFunctions, useLogoutFunction, WithAuthInfoProps } from '@propelauth/react'
 
-const YourApp = withAuthInfo((props: WithAuthInfoProps) => {
+const AuthUI = withAuthInfo((props: WithAuthInfoProps) => {
     const logoutFunction = useLogoutFunction();
     const { redirectToLoginPage, redirectToSignupPage, redirectToAccountPage } = useRedirectFunctions();
     if (props.isLoggedIn) { 
@@ -49,4 +49,4 @@ const YourApp = withAuthInfo((props: WithAuthInfoProps) => {
     }
 });
 
-export default YourApp
+export default AuthUI
