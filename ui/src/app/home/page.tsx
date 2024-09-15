@@ -5,13 +5,11 @@ import { useState } from "react";
 import {
   withAuthInfo,
   useRedirectFunctions,
-  useLogoutFunction,
   WithAuthInfoProps,
 } from "@propelauth/react";
 import Nav from "@/components/nav";
 const Home = (props: WithAuthInfoProps) => {
-  const [logoutbttn, setlogoutbttn] = useState(props.isLoggedIn);
-  const logoutFunction = useLogoutFunction();
+  const [logoutbttn ] = useState(props.isLoggedIn);
   const {
     redirectToLoginPage,
   } = useRedirectFunctions();

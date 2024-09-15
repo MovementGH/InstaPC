@@ -1,6 +1,5 @@
 "use client";
-import AuthUI from "./auth/authUI";
-import { withAuthInfo, useRedirectFunctions, useLogoutFunction, WithAuthInfoProps } from '@propelauth/react'
+import { withAuthInfo, useRedirectFunctions, WithAuthInfoProps } from '@propelauth/react'
 import { useEffect } from "react";
 
 import { redirect } from "next/navigation";
@@ -12,13 +11,13 @@ import{
 } from "../components/ui/accordian";
 
 function LandingPageUI(props: WithAuthInfoProps) {
-  const { redirectToOrgPage, redirectToLoginPage, redirectToSignupPage, redirectToAccountPage } = useRedirectFunctions();
+  const { redirectToLoginPage, redirectToSignupPage } = useRedirectFunctions();
 
   useEffect(() => {
     if (props.isLoggedIn) {
       redirect("/home");
     }
-  }, [props.isLoggedIn, redirect]);
+  }, [props.isLoggedIn]);
 
   if(!props.isLoggedIn){
   return (
@@ -49,7 +48,7 @@ function LandingPageUI(props: WithAuthInfoProps) {
         <AccordionItem value="item-2">
         <AccordionTrigger>How does it work?</AccordionTrigger>
          <AccordionContent>
-            Select your favourite Desktop OS and desired specs, and you're <span className="text-primary">Done!</span>
+            Select your favourite Desktop OS and desired specs, and you&apos;re <span className="text-primary">Done!</span>
          </AccordionContent>
         </AccordionItem>
         </Accordion>

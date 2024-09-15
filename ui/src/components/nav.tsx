@@ -1,5 +1,4 @@
-import { CircleUser, House, LogOut } from "lucide-react";
-import Link from "next/link";
+import { CircleUser, LogOut } from "lucide-react";
 import { useAuthInfo, useLogoutFunction } from "@propelauth/react";
 import {
   DropdownMenu,

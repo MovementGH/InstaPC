@@ -22,7 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "./ui/slider";
-import { capitalize } from "@/lib/utils";
 import { DialogClose } from "./ui/dialog";
 
 const MIN_MEM = 2048;
@@ -66,7 +65,7 @@ function FormSliderField({
       render={({ field }) => (
         <FormItem>
           <FormLabel htmlFor={name}>
-            {capitalize(name)} {unit ? `(${unit})` : ""}
+            {label} {unit ? `(${unit})` : ""}
           </FormLabel>
           <FormControl>
             <Slider

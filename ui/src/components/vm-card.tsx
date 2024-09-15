@@ -1,5 +1,5 @@
 import Image  from "next/image";
-import { Plug, SquarePen } from "lucide-react";
+import { Plug } from "lucide-react";
 import DeleteVM from "./delete-vm";
 import { OS_UI_NAMES, VMData, OS } from "@/entities";
 import VMStatus from "./vm-status";
@@ -38,7 +38,7 @@ export const OS_CARD_IMG = {
 
 export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs: () => void }) {
     const authInfo = useAuthInfo();
-    const [isOnline, _] = useStatus(vmData.id);
+    const [isOnline,] = useStatus(vmData.id);
 
     function tryConnect() {
         toast.loading(`Connecting to '${vmData.name}'`);
@@ -82,7 +82,7 @@ export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs:
             </div>
             <div className="flex gap-x-3">
                 {
-                    isOnline ? <ShutdownVM id={vmData.id} /> : null
+                    isOnline ? <ShutdownVM fetchVMs={fetchVMs} id={vmData.id} /> : null
                 }
                 <EditVM vmData={vmData} fetchVMs={fetchVMs} />
                 <DeleteVM fetchVMs={fetchVMs} id={vmData.id} name={vmData.name} os={vmData.os} />

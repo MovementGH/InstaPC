@@ -1,6 +1,6 @@
  // Mark this component as a client component
  "use client"
- import {  AuthProvider, withAuthInfo, useRedirectFunctions, useLogoutFunction, WithAuthInfoProps } from '@propelauth/react'
+ import {  AuthProvider } from '@propelauth/react'
 
 import {} from '@propelauth/react';
 

@@ -5,8 +5,8 @@ import { useState } from "react";
 import Spinner from "./ui/spinner";
 import { useAuthInfo } from "@propelauth/react";
 
-export default function ShutdownVM({ id }: { id: string }) {
-  const [_, setIsOnline] = useStatus(id);
+export default function ShutdownVM({ id, fetchVMs }: { id: string, fetchVMs: () => void }) {
+  const [, setIsOnline] = useStatus(id);
   const [isShuttingDown, setIsShuttingDown] = useState(false);
   const authInfo = useAuthInfo();
 
@@ -16,6 +16,7 @@ export default function ShutdownVM({ id }: { id: string }) {
     fetch(`${API_ROUTE}/vm/${id}/stop`, { method: "POST", headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`} })
       .then(() => {
         setIsOnline(false);
+        fetchVMs();
       })
       .catch((err) => {
         console.log(err);
