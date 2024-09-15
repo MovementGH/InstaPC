@@ -3,15 +3,17 @@ import { API_ROUTE } from "@/lib/utils";
 import { CirclePower } from "lucide-react";
 import { useState } from "react";
 import Spinner from "./ui/spinner";
+import { useAuthInfo } from "@propelauth/react";
 
 export default function ShutdownVM({ id }: { id: string }) {
   const [_, setIsOnline] = useStatus(id);
   const [isShuttingDown, setIsShuttingDown] = useState(false);
+  const authInfo = useAuthInfo();
 
   function tryShutdown() {
     setIsShuttingDown(true);
 
-    fetch(`${API_ROUTE}/vm/${id}/stop`, { method: "POST" })
+    fetch(`${API_ROUTE}/vm/${id}/stop`, { method: "POST", headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`} })
       .then(() => {
         setIsOnline(false);
       })

@@ -3,8 +3,11 @@ import VMForm, { vmFormSchema } from "./vm-form";
 import { OS, VMData } from "@/entities";
 import { API_ROUTE, getDateString } from "@/lib/utils";
 import { toast } from "sonner"
+import { useAuthInfo } from '@propelauth/react';
 
 export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
+  const authInfo = useAuthInfo();
+
   function onSubmit(values: z.infer<typeof vmFormSchema>) {
     const body = {
         "vm": values
@@ -13,7 +16,7 @@ export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
     fetch(`${API_ROUTE}/vm`, { 
         method: "POST",
         body: JSON.stringify(body),
-        headers: {'content-type': 'application/json'}
+        headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
     })
         .then((res) => {
             if (res.status == 200) {

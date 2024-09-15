@@ -5,6 +5,7 @@ import { OS_UI_NAMES, VMData, OS } from "@/entities";
 import VMStatus from "./vm-status";
 import ShutdownVM from "./shutdown-vm";
 import useStatus from "@/hooks/use-status";
+import { useAuthInfo } from "@propelauth/react";
 import { API_ROUTE, VM_ROUTE } from "@/lib/utils";
 import EditVM from "./edit-vm";
 import Win11Img from "public/win11.png";
@@ -35,12 +36,13 @@ export const OS_CARD_IMG = {
 }
 
 export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs: () => void }) {
+    const authInfo = useAuthInfo();
     const [isOnline, _] = useStatus(vmData.id);
 
     function tryConnect() {
-        fetch(`${API_ROUTE}/vm/${vmData.id}/connect`, { method: 'POST' })
-            .then((_) => {
-                window.location.href = VM_ROUTE;
+        fetch(`${API_ROUTE}/vm/${vmData.id}/connect`, { method: 'POST', headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`}, })
+            .then(result => result.json()).then(result => {
+                window.location.href = `${VM_ROUTE}/?session=${result}&resize=scale&autoconnect=true`;
             })
     }
 

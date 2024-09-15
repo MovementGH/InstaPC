@@ -1,6 +1,6 @@
 "use client"
 import { withAuthInfo, useRedirectFunctions, WithAuthInfoProps } from '@propelauth/react'
-import { redirect } from 'next/navigation';
+
 
 const AuthUI = withAuthInfo((props: WithAuthInfoProps) => {
     const { redirectToOrgPage, redirectToLoginPage, redirectToSignupPage, redirectToAccountPage } = useRedirectFunctions();
@@ -27,9 +27,7 @@ const AuthUI = withAuthInfo((props: WithAuthInfoProps) => {
                 </div>
         );
     }
-    else {
-        redirect("/home")
-    }
+    
 });
 
 export default AuthUI

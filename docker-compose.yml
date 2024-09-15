@@ -4,7 +4,9 @@ services:
     container_name: instapc-api
     restart: unless-stopped
     environment:
-      PORT: 3000
+      - PORT=3000
+      - PROPEL_AUTH_URL=${PROPEL_AUTH_URL}
+      - PROPEL_AUTH_KEY=${PROPEL_AUTH_KEY}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data:/api/data
@@ -13,6 +15,9 @@ services:
     build: ui
     container_name: instapc-ui
     restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_PROPEL_AUTH_URL=${PROPEL_AUTH_URL}
+      - NEXT_PUBLIC_PROPEL_AUTH_KEY=${PROPEL_AUTH_KEY}
 
   nginx:
     image: nginx:latest
@@ -20,6 +25,7 @@ services:
     restart: unless-stopped
     ports:
       - "3001:3001"
+      - "3002:3002"
     environment:
       PUID: 1000
       PGID: 1000
@@ -29,19 +35,6 @@ services:
       - api
       - ui
 
-  guacd:
-    image: guacamole/guacd
-    container_name: instapc-guacd 
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-    networks:
-      - default
-      - vms
-
 networks:
   default:
-    name: instapc-services
-  vms:
-    name: instapc-vms
+    name: instapc

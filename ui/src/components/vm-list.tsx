@@ -4,13 +4,14 @@ import CreateVMCard from "@/components/create-vm-card";
 import { useEffect, useState } from "react";
 import { VMData } from "@/entities";
 import { API_ROUTE } from "@/lib/utils";
-import { OS } from "@/entities";
+import { useAuthInfo } from '@propelauth/react';
 
 export default function VMList() {
+    const authInfo = useAuthInfo();
     const [vmCards, setVMCards] = useState<VMData[]>([]);
 
     function fetchVMs() {
-        fetch(`${API_ROUTE}/vms`)
+        fetch(`${API_ROUTE}/vms`, { headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`} })
             .then(res => res.json())
             .then((data) => {
                 setVMCards(data);

@@ -1,17 +1,32 @@
 import {z} from "zod";
 import VMForm, { vmFormSchema } from "./vm-form";
-import { OS, VMData, OS_UI_NAMES } from "@/entities";
-import { API_ROUTE } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast"
+import { VMData } from "@/entities";
+import { API_ROUTE, getDateString } from "@/lib/utils";
+import { toast } from "sonner";
+import { useAuthInfo } from '@propelauth/react';
 
 export default function EditVMForm({ vmData, fetchVMs }: { vmData: VMData, fetchVMs: () => void}) {
-  const { toast } = useToast();
+    const authInfo = useAuthInfo();
 
   function onSubmit(values: z.infer<typeof vmFormSchema>) {
     const body = {
         "vm": values
     }
-    // TODO: Axios call
+
+    fetch(`${API_ROUTE}/vm`, { 
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
+    })
+        .then((res) => {
+            if (res.status == 200) {
+                toast(`Succsefully modified PC '${values.name}'`, {
+                  description: getDateString(),
+                });
+                fetchVMs();
+            }
+        })
+        .catch((err) => console.log(err))
   }
   
   return (
