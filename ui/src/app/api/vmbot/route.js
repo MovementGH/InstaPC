@@ -3,7 +3,7 @@ import Groq from "groq-sdk";
 import { NextResponse } from 'next/server.js';
 import readline from 'readline';
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY });
 
 let conversationHistory = [];
 
@@ -85,11 +85,11 @@ export async function POST(request) {
             • Name: ${vmSpecs.name}
             • OS: ${vmSpecs.os}
               Explanation: ${explanations['os'] || 'No explanation provided'}
-            • Memory: ${vmSpecs.memory} MiB
+            • Memory: ${vmSpecs.memory} 
               Explanation: ${explanations['memory'] || 'No explanation provided'}
             • Cores: ${vmSpecs.cores}
               Explanation: ${explanations['cores'] || 'No explanation provided'}
-            • Disk: ${vmSpecs.disk} GiB
+            • Disk: ${vmSpecs.disk} 
               Explanation: ${explanations['disk'] || 'No explanation provided'}
             `;
 
