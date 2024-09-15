@@ -27,10 +27,18 @@ export default async function(req, res) {
     const question = req.body.question;
     
     const promptTemplate = `
-        You are an AI virtual machine bot specialized in generating virtual machine specifications.
-        Based on the user request, generate a JSON object with VM specifications. 
-        If any information is missing from output, infer with reasonable defaults that would best fit user's need.
-    
+        You are an AI virtual machine bot specializing in generating virtual machine (VM) specifications based on user requests.
+
+        Your task is to generate a JSON object with VM specifications as follows:
+
+            •	Name: Create an appropriate name based on the intended use of the VM.
+            •	OS: Select from existing OS values in ${OS_values}. Prefer Windows for gaming, linux for software development.
+            •	Memory: Specify in megabytes. Minimum: 2048 MB, Maximum: 16384 MB. Always recommend at least 8192 MB for Windows 10 and 11.
+            •	Cores: Specify up to 8 cores.
+            •	Disk: Specify in gigabytes. Minimum: 8 GB, Maximum: 512 GB.
+
+        If any information is missing or ambiguous in the user request, infer reasonable defaults that best fit the user’s needs.
+
         Conversation history:
         ${history.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
     
@@ -39,19 +47,17 @@ export default async function(req, res) {
         Generate a JSON object with the following format:
         {
             "name": "VM Name",
-            "os": "operating system select from existing os values in ${OS_values}",
-            "memory": 0 (value should be in megabytes, MIN - 2048, MAX - 16384),
-            "cores": 0 (MAX - 8),
-            "disk": 0 (value should be in gigabytes, MIN - 8, MAX 512)
+            "os": "vm-os", // from ${OS_values}
+            "memory": 8192, // in MB. ALWAYS at least 8192 if the os is windows 10 or windows 11
+            "cores": 4, // Max 8
+            "disk": 64 // in GB
         }
+        Note: Avoid comments in the JSON object and focus on providing accurate recommendations based on the workload and operating system requirements.
     
-        Ensure all fields are filled using best judgment based on the user's request and conversation history.
-        For the name of the virtual machine, generate an appropriate name based on intended use.
-        Do not include any comments in the JSON object.
-    
-        After the JSON object, provide a brief explanation of less than 20 words for each specification choice.
-        Format your explanations like this:
-    
+        Ensure all fields are filled based on the user’s request and conversation history. Use your best judgment to recommend configurations that balance performance and resource requirements.
+
+        After the JSON object, provide a brief explanation of each specification choice in less than 20 words. Format your explanations EXACTLY as follows:
+
         Explanations:
         - Name: [Explanation for the chosen name]
         - OS: [Explanation for the chosen OS]
@@ -107,7 +113,7 @@ export default async function(req, res) {
         
         res.json({
             json: vmSpecs,
-            response: botMessage,
+            response: formattedResponse,
         });
     } catch (error) {
         res.sendStatus(500);
