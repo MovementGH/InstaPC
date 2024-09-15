@@ -10,7 +10,7 @@ import { useAuthInfo } from '@propelauth/react';
 
 type Message = {
   id: number;
-  text: string;
+  text: any;
   sender: 'user' | 'bot';
 };
 
@@ -47,7 +47,7 @@ export default function ChatBotComponent({ className }: { className?: string}) {
         // Add bot's response to the messages
         const botMessage: Message = {
           id: messages.length + 2,
-          text: AIoutput.response || 'Sorry, I could not generate a valid response.',
+          text: AIoutput.response.split('\n').map((response: any) => <>{response}<br/></>) || 'Sorry, I could not generate a valid response.',
           sender: 'bot',
         };
 
