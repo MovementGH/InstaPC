@@ -1,14 +1,18 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const child = require('child_process');
-const fs = require('fs');
-const snowflakeId = require('snowflake-id');
-const http = require('http');
-const cors = require('cors');
-const proxy = require('http-proxy').createProxyServer({ ws: true });
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const { initAuth } = require('@propelauth/express');
-const cookieParser = require('cookie-parser');
+import express from 'express';
+import bodyParser from 'body-parser';
+import child from 'child_process';
+import fs from 'fs';
+import snowflakeId from 'snowflake-id';
+import http from 'http';
+import cors from 'cors';
+import httpproxy from 'http-proxy';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { initAuth } from '@propelauth/express';
+import cookieParser from 'cookie-parser';
+
+import Chatbot from './chatbot.js';
+
+const proxy = httpproxy.createProxyServer({ws: true});
 
 // Initialize snowflake
 const snowflake = new snowflakeId.default({
@@ -101,10 +105,8 @@ async function DeleteVMContainer(vm, cleanupFiles = true) {
     console.log(`Deleting VM "${vm.name}" (${vm.id})`);
 
     await RunCommand(`docker rm vm-${vm.id}`).catch(error => {
-        if(error.stderr.match('No such container')) {
-            CreateVMContainer(vm).then(() => StartVM(vm));
+        if(error.stderr.match('No such container'))
             return;
-        }
 
         throw error;
     });
@@ -117,8 +119,9 @@ async function DeleteVMContainer(vm, cleanupFiles = true) {
 async function StartVM(vm) {
     console.log(`Starting VM "${vm.name}" (${vm.id})`);
 
-    await RunCommand(`docker network disconnect instapc vm-${vm.id}`).catch(() => {});
-    await RunCommand(`docker network connect instapc vm-${vm.id}`);
+    await RunCommand(`docker network disconnect instapc vm-${vm.id}`).catch(err => console.error(err.stderr));
+    await RunCommand(`docker network disconnect bridge vm-${vm.id}`).catch(err => console.error(err.stderr));
+    await RunCommand(`docker network connect instapc vm-${vm.id}`).catch(err => console.error(err.stderr));
     await RunCommand(`docker start vm-${vm.id}`).catch(error => {
         if(error.stderr.match('No such container'))
             CreateVMContainer(vm).then(() => StartVM(vm));
@@ -200,7 +203,6 @@ async function PostVMStop(req, res) {
 }
 
 async function PostVM(req, res) {
-    // TODO: VM Limits?
     req.body.vm = {
         ...DEFAULT_VM,
         ...req.body.vm
@@ -209,7 +211,7 @@ async function PostVM(req, res) {
     req.body.vm.owner = req.user.userId;
 
     vms.push(req.body.vm);
-    CreateVMContainer(req.body.vm).then(() => {
+    CreateVMContainer(req.body.vm).then(() => StartVM(req.body.vm)).then(() => {
         res.json(req.body.vm);
     }).catch(() => {
         res.sendStatus(500);
@@ -336,6 +338,7 @@ app.use('/', (req, res, next) => {
     req.user = { userId: "7e3831c5-7855-41c8-9d89-3b8babecf5d7" };
     next();
 });
+app.post('/chatbot', Chatbot);
 app.use('/vm/:id', EnsureVMOwnership);
 app.get('/vms', GetVMs);
 app.get('/vm/:id', GetVM);
