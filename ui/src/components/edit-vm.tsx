@@ -24,7 +24,7 @@ export default function EditVM({
       </SheetTrigger>
       <SheetContent
         onPointerDownOutside={(e) => e.preventDefault()}
-        className="bg-gray-950"
+        className="mb-3"
       >
         <SheetHeader>
           <SheetTitle>{`Edit ${vmData.name}`}</SheetTitle>
