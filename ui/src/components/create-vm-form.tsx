@@ -4,17 +4,14 @@ import { OS, VMData } from "@/entities";
 import { API_ROUTE, getDateString } from "@/lib/utils";
 import { toast } from "sonner"
 import { useAuthInfo } from '@propelauth/react';
+import { UseAuthInfoProps } from "@propelauth/react/dist/types/hooks/useAuthInfo";
 
+export function createVM(values: z.infer<typeof vmFormSchema>, authInfo: UseAuthInfoProps, fetchVMs?: () => void) {
+  const body = {
+    "vm": values
+  }
 
-export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
-  const authInfo = useAuthInfo();
-
-  function onSubmit(values: z.infer<typeof vmFormSchema>) {
-    const body = {
-        "vm": values
-    }
-
-    toast.loading("Creating your PC...");
+  toast.loading("Creating your PC...");
 
     fetch(`${API_ROUTE}/vm`, { 
         method: "POST",
@@ -27,7 +24,7 @@ export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
               toast.success(`Succsefully created '${values.name}'`, {
                 description: getDateString(),
               });
-              fetchVMs();
+              fetchVMs && fetchVMs();
             }
             else {
               throw new Error(`Error ${res.status}`);
@@ -39,6 +36,13 @@ export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
             description: err.message
           });
         })
+}
+
+export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
+  const authInfo = useAuthInfo();
+
+  function onSubmit(values: z.infer<typeof vmFormSchema>) {
+    createVM(values, authInfo, fetchVMs);
   }
 
   return (

@@ -7,26 +7,48 @@ import { API_ROUTE } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send } from "lucide-react";
 import { useAuthInfo } from '@propelauth/react';
-
+import { createVM } from '@/components/create-vm-form';
+import { vmFormSchema } from '@/components/vm-form';
+import {z} from 'zod';
 type Message = {
   id: number;
   text: any;
   sender: 'user' | 'bot';
 };
 
+type VMFormValues = z.infer<typeof vmFormSchema>;
+
+
+const handleYesNoinit = async (vmjson: VMFormValues | null, authinfo: ReturnType<typeof useAuthInfo>) => {
+    if (vmjson && Object.keys(vmjson).length !== 0) {
+      // Call createVM only if vmjson is valid and not empty
+      createVM(vmjson, authinfo);
+    } else {
+      console.log("VM JSON is empty or invalid");
+    }
+  };
 export default function ChatBotComponent({ className }: { className?: string}) {
-  const [messages, setMessages] = useState<Message[]>([
+    const authinfo = useAuthInfo();
+    const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: "Hello! How can I assist you today?", sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const authInfo = useAuthInfo();
+  const [vmjson, setVMjson] = useState<VMFormValues | null>(null);
+
 
 
   const handleSend = async () => {
     if (input.trim()) {
+    
       const newMessage: Message = { id: messages.length + 1, text: input, sender: 'user' };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
+      if (input === 'Yes') {
+        await handleYesNoinit(vmjson, authinfo);  // Pass the current vmjson state to the function
+        setInput('');  // Clear the input field
+        return; // Early return as we don't want to call the AI API after "Yes/No"
+      }
+
       setInput(''); // Clear input field
       setLoading(true); // Set loading state
 
@@ -35,7 +57,7 @@ export default function ChatBotComponent({ className }: { className?: string}) {
         const response = await fetch(`${API_ROUTE}/chatbot`, { 
           method: 'POST',
           body: JSON.stringify({ question: newMessage.text }), // Send user's question
-          headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
+          headers: {'content-type': 'application/json', authorization: `Bearer ${authinfo.accessToken}`},
         });
 
         if (!response.ok) {
@@ -43,7 +65,9 @@ export default function ChatBotComponent({ className }: { className?: string}) {
         }
 
         const AIoutput = await response.json();
-        console.log(AIoutput.json);
+        
+        console.log(AIoutput.jsonSpecs);
+        setVMjson(AIoutput.jsonSpecs as z.infer<typeof vmFormSchema>);
         // Add bot's response to the messages
         const botMessage: Message = {
           id: messages.length + 2,
@@ -52,6 +76,8 @@ export default function ChatBotComponent({ className }: { className?: string}) {
         };
 
         setMessages((prevMessages) => [...prevMessages, botMessage]);
+        const YesNoconfirm : Message = { id: messages.length + 3, text: 'Enter Yes/No for your choice to initiate the VM', sender: 'bot' };
+        setMessages((prevMessages) => [...prevMessages, YesNoconfirm]);
       } catch (error) {
         console.error('Error:', error);
         const errorMessage: Message = {
