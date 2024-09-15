@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useState } from "react";
 import ChatBotComponent from "@/app/chatbotUI";
+import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 
 export default function Nav() {
   const authInfo = useAuthInfo();
@@ -18,18 +19,19 @@ export default function Nav() {
 
   return (
     <aside className="flex">
-      <nav className="relative flex flex-col grow items-center gap-8 p-6 z-20 bg-background">
+      <nav className="relative flex flex-col grow items-center gap-8 p-6 z-20 bg-background mt-6">
         <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none"><CircleUser className="size-7 text-muted hover:text-muted/80" /></DropdownMenuTrigger>
-          <DropdownMenuContent className="mt-1 ml-4">
-            <DropdownMenuLabel className="font-medium text-xs">Currently logged in as:</DropdownMenuLabel>
-            <DropdownMenuLabel>{authInfo.user?.email}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
+          <DropdownMenuTrigger className="outline-none"><CircleUser className="size-7 text-foreground hover:text-foreground/80" /></DropdownMenuTrigger>
+          <DropdownMenuContent className="mt-1 ml-4 rounded-sm">
+            <DropdownMenuArrow />
+            <DropdownMenuLabel className="font-base text-xs">Currently logged in as:</DropdownMenuLabel>
+            <DropdownMenuLabel className="font-bold">{authInfo.user?.email}</DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-accent" />
             <DropdownMenuItem className="hover:cursor-pointer" onClick={() => logout(true)}><LogOut className="inline mr-1 size-4"/>Log Out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <button onClick={() => setIsOpen(!isOpen)}>
-          <BotMessageSquare className="size-7 text-muted hover:text-muted/80" />
+          <BotMessageSquare className="size-7 text-foreground hover:text-foreground/80" />
         </button>
       </nav>
       <ChatBotComponent className={`${isOpen ? 'translate-x-0 relative' : '-translate-x-[300%] absolute'}`}/>

@@ -14,15 +14,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Slider } from "./ui/slider";
 import { DialogClose } from "./ui/dialog";
+import { OsCombobox } from "./os-combobox";
 
 export const vmFormSchema = z.object({
   name: z.string().min(2, {
@@ -106,24 +100,10 @@ export default function VMForm({ defaultValues, onSubmit }: { defaultValues?: VM
           control={form.control}
           name="os"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel htmlFor="os">Operating System</FormLabel>
               <FormControl>
-                <Select
-                  defaultValue={field.value}
-                  onValueChange={(value: OS) => form.setValue("os", value)}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(OS).map((value: OS, index: number) => (
-                      <SelectItem value={value} key={index}>
-                        {OS_UI_NAMES[value]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <OsCombobox onSelect={(value) => form.setValue("os", value)} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -155,8 +135,8 @@ export default function VMForm({ defaultValues, onSubmit }: { defaultValues?: VM
           step={2}
           unit="GB"
         />
-        <DialogClose>
-            <Button type="submit">Submit</Button>
+        <DialogClose className="w-full">
+            <Button type="submit" className="w-full">Submit</Button>
         </DialogClose>
       </form>
     </Form>
