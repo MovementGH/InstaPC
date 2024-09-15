@@ -1,8 +1,8 @@
 "use client";
 import { withAuthInfo, useRedirectFunctions, WithAuthInfoProps } from '@propelauth/react'
 import { useEffect } from "react";
+import { useRouter } from "next/navigation"; // Use useRouter for client-side navigation
 
-import { redirect } from "next/navigation";
 import{
   Accordion,
   AccordionContent,
@@ -13,11 +13,12 @@ import{
 function LandingPageUI(props: WithAuthInfoProps) {
   const { redirectToLoginPage, redirectToSignupPage } = useRedirectFunctions();
 
+  const router = useRouter();
   useEffect(() => {
     if (props.isLoggedIn) {
-      redirect("/home");
+      router.push("/home");
     }
-  }, [props.isLoggedIn]);
+  }, [props.isLoggedIn, router]);
 
   if(!props.isLoggedIn){
   return (

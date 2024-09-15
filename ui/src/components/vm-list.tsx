@@ -14,6 +14,7 @@ export default function VMList() {
         fetch(`${API_ROUTE}/vms`, { method: 'GET', headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`} })
             .then(res => res.json())
             .then((data) => {
+                console.log(data);
                 setVMCards(data);
             })
             .catch((err) => {
