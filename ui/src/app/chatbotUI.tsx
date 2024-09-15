@@ -41,7 +41,7 @@ export default function ChatBotComponent({ className }: { className?: string}) {
         }
 
         const AIoutput = await response.json();
-
+        console.log(AIoutput.jsonSpecs);
         // Add bot's response to the messages
         const botMessage: Message = {
           id: messages.length + 2,

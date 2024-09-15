@@ -1,10 +1,30 @@
 import Groq from "groq-sdk";
-
+import { OS } from "@/entities";
 const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY });
 
 let conversationHistory = [];
 
 export async function POST(req) {
+
+    
+    const OS_values = [
+      "windows-11",
+      "windows-10",
+      "windows-8",
+      "windows-7",
+      "windows-vista",
+      "windows-xp",
+      "arch-basic",
+      "arch-kde",
+      "mint",
+      "elementary",
+      "ubuntu-20.04",
+      "ubuntu-24.04",
+      "macos-sonoma",
+      "macos-ventura",
+      "macos-monterey",
+      "macos-big-sur",
+    ]
     if (req.method !== 'POST') {
         return new Response(JSON.stringify({ error: 'Only POST requests are allowed' }), { status: 405 });
     }
@@ -24,10 +44,10 @@ export async function POST(req) {
         Generate a JSON object with the following format:
         {
             "name": "VM Name",
-            "os": "operating system",
-            "memory": 0,
+            "os": "operating system select from existing os values in ${OS_values}",
+            "memory": 0 (value should be in megabytes, MIN - ),
             "cores": 0,
-            "disk": 0
+            "disk": 0 (value should be in gigabytes)
         }
 
         Ensure all fields are filled using best judgment based on the user's request and conversation history.
@@ -40,9 +60,9 @@ export async function POST(req) {
         Explanations:
         - Name: [Explanation for the chosen name]
         - OS: [Explanation for the chosen OS]
-        - Memory: [Explanation for the chosen memory]
+        - Memory: [Explanation for the chosen memory (value should be in gigabytes)]
         - Cores: [Explanation for the chosen number of cores]
-        - Disk: [Explanation for the chosen disk size]
+        - Disk: [Explanation for the chosen disk size (value should be in gigabytes)]
         `;
 
         const chatCompletion = await getGroqChatCompletion([
