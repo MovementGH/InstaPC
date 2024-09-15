@@ -8,7 +8,7 @@ import {
   WithAuthInfoProps,
 } from "@propelauth/react";
 import Nav from "@/components/nav";
-import ChatBotComponent from "../chatbotUI";
+
 const Home = (props: WithAuthInfoProps) => {
   const [logoutbttn ] = useState(props.isLoggedIn);
   const {
@@ -19,14 +19,13 @@ const Home = (props: WithAuthInfoProps) => {
     return null;
   }
   return (
-    <div className="flex grow">
+    <div className="flex grow overflow-y-scroll">
       <Nav />
       <main className="flex flex-col items-center p-4 w-full">
         <div className="max-w-7xl w-full mt-12">
           <h1 className="font-bold text-xl mb-4 text-muted">
             Available PCs <Computer className="inline ml-1 size-5 mb-1" />
           </h1>
-          <ChatBotComponent/>
           <VMList />
         </div>
       </main>

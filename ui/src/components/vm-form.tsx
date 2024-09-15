@@ -1,5 +1,5 @@
 "use client";
-import { OS, OS_UI_NAMES, VMData } from "@/entities";
+import { MAX_CORES, MAX_DISK, MAX_MEM, MIN_CORES, MIN_DISK, MIN_MEM, OS, OS_UI_NAMES, VMData } from "@/entities";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, UseFormReturn } from "react-hook-form";
@@ -23,13 +23,6 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "./ui/slider";
 import { DialogClose } from "./ui/dialog";
-
-const MIN_MEM = 2048;
-const MAX_MEM = 16384;
-const MIN_CORES = 1;
-const MAX_CORES = 8;
-const MIN_DISK = 16;
-const MAX_DISK = 64;
 
 export const vmFormSchema = z.object({
   name: z.string().min(2, {

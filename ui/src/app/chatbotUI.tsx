@@ -12,8 +12,7 @@ type Message = {
   sender: 'user' | 'bot';
 };
 
-export default function ChatBotComponent() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ChatBotComponent({ className }: { className?: string}) {
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: "Hello! How can I assist you today?", sender: 'bot' },
   ]);
@@ -66,28 +65,11 @@ export default function ChatBotComponent() {
   };
 
   return (
-    <div className="fixed bottom-4 left-4">
-      {!isOpen && (
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="rounded-full w-16 h-16 shadow-lg"
-        >
-          <MessageCircle className="h-8 w-8" />
-          <span className="sr-only">Open chat</span>
-        </Button>
-      )}
-
       <div
-        className={`fixed bottom-0 left-0 w-96 h-[600px] bg-background border rounded-tl-lg shadow-xl transition-transform duration-300 ease-in-out ${
-          isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
-        }`}
+        className={`opacity-100 w-96 h-full bg-background shadow-xl transition-transform duration-200 ease-in-out origin-left ${className}`}
       >
-        <div className="flex justify-between items-center bg-primary p-4 text-primary-foreground">
-          <h2 className="text-2xl font-bold">Talk to InstaPC Bot</h2>
-          <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-            <X className="h-6 w-6" />
-            <span className="sr-only">Close chat</span>
-          </Button>
+        <div className="flex justify-between items-center bg-accent/30 p-3 text-primary-foreground">
+          <h2 className="text-lg font-semibold">Talk to InstaPC Bot</h2>
         </div>
 
         <ScrollArea className="flex-grow p-4 h-[calc(100%-8rem)]">
@@ -110,8 +92,8 @@ export default function ChatBotComponent() {
                   />
                 </Avatar>
                 <div
-                  className={`mx-2 p-3 rounded-lg ${
-                    message.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'
+                  className={`mx-2 p-3 rounded-lg text-sm ${
+                    message.sender === 'user' ? 'bg-primary text-accent-foreground' : 'bg-accent'
                   }`}
                 >
                   {message.text}
@@ -127,7 +109,7 @@ export default function ChatBotComponent() {
               e.preventDefault();
               handleSend();
             }}
-            className="flex space-x-2"
+            className="flex space-x-1"
           >
             <Input
               value={input}
@@ -136,13 +118,12 @@ export default function ChatBotComponent() {
               className="flex-grow"
               disabled={loading} // Disable input while loading
             />
-            <Button type="submit" size="icon" disabled={loading}>
+            <Button type="submit" className="bg-accent" size="icon" disabled={loading}>
               <Send className="h-4 w-4" />
               <span className="sr-only">Send</span>
             </Button>
           </form>
         </div>
       </div>
-    </div>
-  );
+  )
 }

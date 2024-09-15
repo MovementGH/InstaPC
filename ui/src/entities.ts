@@ -1,5 +1,12 @@
 // Interfaces of database entities
 
+export const MIN_MEM = 2048;
+export const MAX_MEM = 16384;
+export const MIN_CORES = 1;
+export const MAX_CORES = 8;
+export const MIN_DISK = 16;
+export const MAX_DISK = 64;
+
 export enum OS {
     Win11 = "windows-11",
     Win10 = "windows-10",
