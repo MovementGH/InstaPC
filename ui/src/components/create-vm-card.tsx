@@ -1,4 +1,4 @@
-import { SquarePlus } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -12,10 +12,10 @@ import CreateVMForm from "./create-vm-form";
 function CreateVMTrigger() {
   return (
     <div
-      className="overflow-hidden group relative flex flex-col justify-center items-center rounded-sm border-muted-foreground border-2 border-solid hover:border-primary hover:shadow-sm hover:shadow-primary transition-all duration-150 ease-in-out hover:cursor-pointer p-16"
+      className="overflow-hidden group relative flex flex-col justify-center items-center rounded-sm border-muted-foreground border-2 border-solid hover:border-primary hover:shadow-sm hover:shadow-primary transition-all duration-150 ease-in-out hover:cursor-pointer h-52"
       title="Create New PC"
     >
-      <SquarePlus className="size-16 text-muted-foreground group-hover:text-primary  hover:shadow-primary transition-all duration-150 ease-in-out mb-1" />
+      <CirclePlus className="size-32 text-muted-foreground group-hover:text-primary  hover:shadow-primary transition-all duration-150 ease-in-out mb-1" />
     </div>
   );
 }
