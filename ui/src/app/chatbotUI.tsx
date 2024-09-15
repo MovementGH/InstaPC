@@ -46,7 +46,17 @@ export default function ChatBotComponent({ className }: { className?: string}) {
       if (input === 'Yes') {
         await handleYesNoinit(vmjson, authinfo);  // Pass the current vmjson state to the function
         setInput('');  // Clear the input field
+        setMessages([
+            { id: 1, text: "Hello! How can I assist you today?", sender: 'bot' } // Reset chat with initial message
+          ]);
         return; // Early return as we don't want to call the AI API after "Yes/No"
+      }
+      else if (input === 'No') {
+        setMessages([
+          { id: 1, text: "Hello! How can I assist you today?", sender: 'bot' } // Reset chat with initial message
+        ]);
+        setInput('');  // Clear the input field
+        return;
       }
 
       setInput(''); // Clear input field
@@ -66,8 +76,8 @@ export default function ChatBotComponent({ className }: { className?: string}) {
 
         const AIoutput = await response.json();
         
-        console.log(AIoutput.jsonSpecs);
-        setVMjson(AIoutput.jsonSpecs as z.infer<typeof vmFormSchema>);
+        console.log(AIoutput.json);
+        setVMjson(AIoutput.json as z.infer<typeof vmFormSchema>);
         // Add bot's response to the messages
         const botMessage: Message = {
           id: messages.length + 2,
