@@ -19,12 +19,12 @@ const Home = (props: WithAuthInfoProps) => {
     return null;
   }
   return (
-    <div className="flex grow overflow-y-scroll">
+    <div className="flex grow overflow-hidden">
       <Nav />
       <main className="flex flex-col items-center p-4 w-full">
-        <div className="max-w-7xl w-full mt-12">
-          <h1 className="font-bold text-xl mb-4 text-muted">
-            Available PCs <Computer className="inline ml-1 size-5 mb-1" />
+        <div className="max-w-7xl w-full mt-6">
+          <h1 className="font-bold text-xl mb-4 text-foreground">
+            Available PCs
           </h1>
           <VMList />
         </div>

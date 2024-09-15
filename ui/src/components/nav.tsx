@@ -18,9 +18,9 @@ export default function Nav() {
 
   return (
     <aside className="flex">
-      <nav className="relative flex flex-col grow items-center gap-8 p-6 z-20 bg-background">
+      <nav className="relative flex flex-col grow items-center gap-8 p-6 z-20 bg-background mt-6">
         <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none"><CircleUser className="size-7 text-muted hover:text-muted/80" /></DropdownMenuTrigger>
+          <DropdownMenuTrigger className="outline-none"><CircleUser className="size-7 text-foreground hover:text-foreground/80" /></DropdownMenuTrigger>
           <DropdownMenuContent className="mt-1 ml-4">
             <DropdownMenuLabel className="font-medium text-xs">Currently logged in as:</DropdownMenuLabel>
             <DropdownMenuLabel>{authInfo.user?.email}</DropdownMenuLabel>
@@ -29,7 +29,7 @@ export default function Nav() {
           </DropdownMenuContent>
         </DropdownMenu>
         <button onClick={() => setIsOpen(!isOpen)}>
-          <BotMessageSquare className="size-7 text-muted hover:text-muted/80" />
+          <BotMessageSquare className="size-7 text-foreground hover:text-foreground/80" />
         </button>
       </nav>
       <ChatBotComponent className={`${isOpen ? 'translate-x-0 relative' : '-translate-x-[300%] absolute'}`}/>
