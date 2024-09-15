@@ -6,6 +6,8 @@ import { VMData } from "@/entities";
 import { API_ROUTE } from "@/lib/utils";
 import { useAuthInfo } from '@propelauth/react';
 
+import { OS } from "@/entities";
+
 export default function VMList() {
     const authInfo = useAuthInfo();
     const [vmCards, setVMCards] = useState<VMData[]>([]);
@@ -34,7 +36,7 @@ export default function VMList() {
     }, [vmCards]);
 
     return (
-        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-6 gap-x-4">
+        <section className="grid grid-cols-1 grid-flow-row-dense sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-6 gap-x-4">
             {
                 vmCards.map((item: VMData, index: number) => (
                     <VMCard fetchVMs={fetchVMs} vmData={item} key={index}/>
