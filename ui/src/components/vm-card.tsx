@@ -65,16 +65,16 @@ export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs:
             })
     }
 
-    return (<div className="overflow-hidden group relative flex flex-col justify-center items-center rounded-sm border-gray-800 border-2 border-solid hover:border-primary transition-all duration-75 ease-in-out">
+    return (<div className="overflow-hidden group relative flex flex-col justify-center items-center rounded-sm border-gray-800 border-2 border-solid hover:border-primary hover:shadow-sm hover:shadow-primary transition-all duration-150 ease-in-out">
         <div onClick={tryConnect} className="relative group-hover:cursor-pointer flex flex-col justify-center items-center size-full gap-2 p-16" title={`Connect to ${vmData.name} (${OS_UI_NAMES[vmData.os]})`}>
             <Plug className="absolute hidden z-10 size-14 group-hover:block text-white"/>
             <Image
                 src={OS_CARD_IMG[vmData.os]}
-                className="absolute size-full object-cover group-hover:blur-sm group-hover:brightness-90"
+                className="absolute size-full object-cover group-hover:blur-sm group-hover:brightness-90 transition-all duration-150 ease-in-out"
                 alt="Windows VM"
             />
         </div>
-        <div className="flex flex-row justify-between items-center w-full bg-gray-700 bottom-0 py-2 px-3 text-muted h-12">
+        <div className="z-10 flex flex-row justify-between items-center w-full bg-gray-700 bottom-0 py-2 px-3 text-muted h-12">
             <div className="flex items-center gap-2 w-2/3">
                 <VMStatus id={vmData.id}/>
                 <div className="flex flex-col w-full">
