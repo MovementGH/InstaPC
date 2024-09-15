@@ -13,7 +13,8 @@ import Win108Img from "public/win10-8.png";
 import Win7XPImg from "public/win7.png";
 import WinVistaImg from "public/winvista.png";
 import ArchImg from "public/arch-linux.png";
-import KaliImg from "public/kali.png";
+import ElementaryImg from "public/elementary.png";
+import MintImg from "public/mint.png";
 import UbuntuImg from "public/ubuntu.png";
 import MacImg from "public/mac.png";
 import { toast } from "sonner";
@@ -27,7 +28,8 @@ export const OS_CARD_IMG = {
     [OS.WinXP]: Win7XPImg,
     [OS.Arch]: ArchImg,
     [OS.ArchKDE]: ArchImg,
-    [OS.Kali]: KaliImg,
+    [OS.Elementary]: ElementaryImg,
+    [OS.Mint]: MintImg,
     [OS.Ubuntu2004]: UbuntuImg,
     [OS.Ubuntu2404]: UbuntuImg,
     [OS.MacSonomoa]: MacImg,
