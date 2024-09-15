@@ -11,7 +11,7 @@ export default function VMList() {
     const [vmCards, setVMCards] = useState<VMData[]>([]);
 
     function fetchVMs() {
-        fetch(`${API_ROUTE}/vms`, { headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`} })
+        fetch(`${API_ROUTE}/vms`, { method: 'GET', headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`} })
             .then(res => res.json())
             .then((data) => {
                 setVMCards(data);

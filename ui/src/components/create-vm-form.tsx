@@ -13,20 +13,31 @@ export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
         "vm": values
     }
 
+    toast.loading("Creating your PC...");
+
     fetch(`${API_ROUTE}/vm`, { 
         method: "POST",
         body: JSON.stringify(body),
         headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
     })
         .then((res) => {
-            if (res.status == 200) {
-                toast(`Succsefully created PC '${values.name}'`, {
-                  description: getDateString(),
-                });
-                fetchVMs();
+            if (res.ok) {
+              toast.dismiss();
+              toast.success(`Succsefully created '${values.name}'`, {
+                description: getDateString(),
+              });
+              fetchVMs();
+            }
+            else {
+              throw new Error(`Error ${res.status}`);
             }
         })
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          toast.dismiss();
+          toast.error("Failed to create PC due to a server error.", {
+            description: err.message
+          });
+        })
   }
 
   return (

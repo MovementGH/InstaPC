@@ -13,20 +13,31 @@ export default function EditVMForm({ vmData, fetchVMs }: { vmData: VMData, fetch
         "vm": values
     }
 
+    toast.loading(`Applying changes to '${vmData.name}'...`);
+
     fetch(`${API_ROUTE}/vm`, { 
         method: "POST",
         body: JSON.stringify(body),
         headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
     })
         .then((res) => {
-            if (res.status == 200) {
-                toast(`Succsefully modified PC '${values.name}'`, {
-                  description: getDateString(),
-                });
-                fetchVMs();
+            if (res.ok) {
+              toast.dismiss();
+              toast.success(`Succsefully modified '${values.name}'`, {
+                description: getDateString(),
+              });
+              fetchVMs();
+            }
+            else {
+              throw new Error(`Error ${res.status}`);
             }
         })
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          toast.dismiss();
+          toast.error("Failed to modify PC due to a server error.", {
+            description: err.message
+          });
+        })
   }
   
   return (

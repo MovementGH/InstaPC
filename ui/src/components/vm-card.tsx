@@ -16,6 +16,7 @@ import ArchImg from "public/arch-linux.png";
 import KaliImg from "public/kali.png";
 import UbuntuImg from "public/ubuntu.png";
 import MacImg from "public/mac.png";
+import { toast } from "sonner";
 
 export const OS_CARD_IMG = {
     [OS.Win11]: Win11Img,
@@ -40,9 +41,27 @@ export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs:
     const [isOnline, _] = useStatus(vmData.id);
 
     function tryConnect() {
+        toast.loading(`Connecting to '${vmData.name}'`);
+        
         fetch(`${API_ROUTE}/vm/${vmData.id}/connect`, { method: 'POST', headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`}, })
-            .then(result => result.json()).then(result => {
-                window.location.href = `${VM_ROUTE}/?session=${result}&resize=scale&autoconnect=true`;
+            .then(result => {
+                if (result.ok) {
+                    toast.dismiss();
+                    return result.json()
+                }
+                else {
+                    throw new Error(`Error ${result.status}`);
+                }
+            })
+            .then(result => {
+                window.open(`${VM_ROUTE}/?session=${result}&resize=scale&autoconnect=true`, 'popupWindow', `resizable=yes,width=${screen.width},height=${screen.height}`);
+            })
+            .catch((err) => {
+                console.log(err)
+                toast.dismiss();
+                toast.error("Failed to connect to PC due to a server error.", {
+                  description: err.message
+                })
             })
     }
 
@@ -66,7 +85,7 @@ export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs:
                     isOnline ? <ShutdownVM id={vmData.id} /> : null
                 }
                 <EditVM vmData={vmData} fetchVMs={fetchVMs} />
-                <DeleteVM id={vmData.id} name={vmData.name} os={vmData.os} />
+                <DeleteVM fetchVMs={fetchVMs} id={vmData.id} name={vmData.name} os={vmData.os} />
             </div>
         </div>
     </div>);
