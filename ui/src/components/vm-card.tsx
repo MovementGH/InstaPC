@@ -54,7 +54,7 @@ export default function VMCard({ vmData, fetchVMs }: { vmData: VMData, fetchVMs:
                 }
             })
             .then(result => {
-                window.open(`${VM_ROUTE}/?session=${result}&resize=scale&autoconnect=true`, 'popupWindow', `resizable=yes,width=${screen.width},height=${screen.height}`);
+                window.open(`${VM_ROUTE}/?session=${result}&resize=scale&autoconnect=true`, '_blank', `resizable=yes,width=${screen.width},height=${screen.height}`);
             })
             .catch((err) => {
                 console.log(err)

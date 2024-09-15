@@ -27,7 +27,7 @@ import { DialogClose } from "./ui/dialog";
 const MIN_MEM = 2048;
 const MAX_MEM = 16384;
 const MIN_CORES = 1;
-const MAX_CORES = 4;
+const MAX_CORES = 8;
 const MIN_DISK = 16;
 const MAX_DISK = 64;
 
