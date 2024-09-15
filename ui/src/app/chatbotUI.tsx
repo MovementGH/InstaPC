@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { API_ROUTE } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send } from "lucide-react";
+import { useAuthInfo } from '@propelauth/react';
 
 type Message = {
   id: number;
@@ -18,6 +20,8 @@ export default function ChatBotComponent({ className }: { className?: string}) {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const authInfo = useAuthInfo();
+
 
   const handleSend = async () => {
     if (input.trim()) {
@@ -28,12 +32,10 @@ export default function ChatBotComponent({ className }: { className?: string}) {
 
       try {
         // Call the Next.js API route using fetch
-        const response = await fetch('/api/InstaPCBot', {
+        const response = await fetch(`${API_ROUTE}/chatbot`, { 
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({ question: newMessage.text }), // Send user's question
+          headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
         });
 
         if (!response.ok) {
@@ -41,11 +43,11 @@ export default function ChatBotComponent({ className }: { className?: string}) {
         }
 
         const AIoutput = await response.json();
-        console.log(AIoutput.jsonSpecs);
+        console.log(AIoutput.json);
         // Add bot's response to the messages
         const botMessage: Message = {
           id: messages.length + 2,
-          text: AIoutput.botresponse || 'Sorry, I could not generate a valid response.',
+          text: AIoutput.response || 'Sorry, I could not generate a valid response.',
           sender: 'bot',
         };
 

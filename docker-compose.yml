@@ -7,6 +7,7 @@ services:
       - PORT=3000
       - PROPEL_AUTH_URL=${PROPEL_AUTH_URL}
       - PROPEL_AUTH_KEY=${PROPEL_AUTH_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
       - DATA=/Bulk/Files/Desktop/Coding/VTHacks/data
       - VM_TIMEOUT=900000
     volumes:
@@ -14,12 +15,13 @@ services:
       - ./data:/api/data
 
   ui:
-    build: ui
+    build:
+      context: ui
+      args:      
+        - PROPEL_AUTH_URL=${PROPEL_AUTH_URL}
+        - PROPEL_AUTH_KEY=${PROPEL_AUTH_KEY}
     container_name: instapc-ui
     restart: unless-stopped
-    environment:
-      - NEXT_PUBLIC_PROPEL_AUTH_URL=${PROPEL_AUTH_URL}
-      - NEXT_PUBLIC_PROPEL_AUTH_KEY=${PROPEL_AUTH_KEY}
 
   nginx:
     image: nginx:latest
