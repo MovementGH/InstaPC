@@ -14,20 +14,40 @@ import {
 import { Button } from "./ui/button";
 import { OS, OS_UI_NAMES } from "@/entities";
 import { useAuthInfo } from '@propelauth/react';
+import { toast } from "sonner";
+import { useState } from "react";
 
-export default function DeleteVM({ id, name, os }: { id: string, name: string, os: OS }) {
+export default function DeleteVM({ id, name, os, fetchVMs }: { id: string, name: string, os: OS, fetchVMs: () => void}) {
     const authInfo = useAuthInfo();
+    const [dialogOpen, setDialogOpen] = useState(false);
+
     function tryDelete() {
         fetch(`${API_ROUTE}/vm/${id}`, {
             method: "DELETE",
             headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
         })
-            .then((res) => console.log(res.status))
-            .catch((err) => console.log(err))
+            .then((res) => {
+                if (res.ok) {
+                    toast.dismiss();
+                    toast.success("Successfully deleted.");
+                    fetchVMs();
+                    return;
+                }
+                throw new Error(`Error ${res.status}`);
+            })
+            .catch((err: Error) => {
+                toast.dismiss();
+                toast.error("Failed to delete PC due to a server error.", {
+                    description: err.message
+                });
+            })
+            .finally(() => {
+                setDialogOpen(false);
+            })
     }
 
     return (
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={() => setDialogOpen(!dialogOpen)}>
             <DialogTrigger title={`Delete ${name} (${OS_UI_NAMES[os]})`}><Trash2 className="text-muted hover:text-muted/80 size-4"/></DialogTrigger>
             <DialogContent>
                 <DialogHeader>

@@ -11,7 +11,7 @@ export default function VMList() {
     const [vmCards, setVMCards] = useState<VMData[]>([]);
 
     function fetchVMs() {
-        fetch(`${API_ROUTE}/vms`, { headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`} })
+        fetch(`${API_ROUTE}/vms`, { method: 'GET', headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`} })
             .then(res => res.json())
             .then((data) => {
                 setVMCards(data);
@@ -37,7 +37,7 @@ export default function VMList() {
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-6 gap-x-4">
             {
                 vmCards.map((item: VMData, index: number) => (
-                    <VMCard vmData={item} key={index}/>
+                    <VMCard fetchVMs={fetchVMs} vmData={item} key={index}/>
                 ))
             }
             <CreateVMCard fetchVMs={fetchVMs} />

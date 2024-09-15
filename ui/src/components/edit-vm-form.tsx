@@ -1,19 +1,19 @@
 import {z} from "zod";
 import VMForm, { vmFormSchema } from "./vm-form";
-import { OS, VMData, OS_UI_NAMES } from "@/entities";
-import { API_ROUTE } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast"
+import { VMData } from "@/entities";
+import { API_ROUTE, getDateString } from "@/lib/utils";
+import { toast } from "sonner";
 import { useAuthInfo } from '@propelauth/react';
 
-export default function EditVMForm({ fetchVMs }: { fetchVMs: () => void}) {
+export default function EditVMForm({ vmData, fetchVMs }: { vmData: VMData, fetchVMs: () => void}) {
     const authInfo = useAuthInfo();
-    const { toast } = useToast();
 
   function onSubmit(values: z.infer<typeof vmFormSchema>) {
     const body = {
         "vm": values
     }
-    console.log("test");
+
+    toast.loading(`Applying changes to '${vmData.name}'...`);
 
     fetch(`${API_ROUTE}/vm`, { 
         method: "POST",
@@ -21,25 +21,28 @@ export default function EditVMForm({ fetchVMs }: { fetchVMs: () => void}) {
         headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
     })
         .then((res) => {
-            if (res.status == 200) {
-                toast({
-                    description: `Succsefully created PC ${values.name} (${OS_UI_NAMES[values.os]})`
-                });
-                fetchVMs();
+            if (res.ok) {
+              toast.dismiss();
+              toast.success(`Succsefully modified '${values.name}'`, {
+                description: getDateString(),
+              });
+              fetchVMs();
+            }
+            else {
+              throw new Error(`Error ${res.status}`);
             }
         })
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          toast.dismiss();
+          toast.error("Failed to modify PC due to a server error.", {
+            description: err.message
+          });
+        })
   }
-
+  
   return (
     <VMForm
-      defaultValues={{
-        name: "My PC",
-        os: OS.Win11,
-        memory: 4096,
-        cores: 2,
-        disk: 32,
-      } as VMData}
+      defaultValues={vmData}
       onSubmit={onSubmit}
     />
   )

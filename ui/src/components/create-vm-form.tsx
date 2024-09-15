@@ -1,18 +1,19 @@
 import {z} from "zod";
 import VMForm, { vmFormSchema } from "./vm-form";
-import { OS, VMData, OS_UI_NAMES } from "@/entities";
-import { API_ROUTE } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast"
+import { OS, VMData } from "@/entities";
+import { API_ROUTE, getDateString } from "@/lib/utils";
+import { toast } from "sonner"
 import { useAuthInfo } from '@propelauth/react';
 
 export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
-    const authInfo = useAuthInfo();
-    const { toast } = useToast();
+  const authInfo = useAuthInfo();
 
   function onSubmit(values: z.infer<typeof vmFormSchema>) {
     const body = {
         "vm": values
     }
+
+    toast.loading("Creating your PC...");
 
     fetch(`${API_ROUTE}/vm`, { 
         method: "POST",
@@ -20,14 +21,23 @@ export default function CreateVMForm({ fetchVMs }: { fetchVMs: () => void}) {
         headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
     })
         .then((res) => {
-            if (res.status == 200) {
-                toast({
-                    description: `Succsefully created PC ${values.name} (${OS_UI_NAMES[values.os]})`
-                });
-                fetchVMs();
+            if (res.ok) {
+              toast.dismiss();
+              toast.success(`Succsefully created '${values.name}'`, {
+                description: getDateString(),
+              });
+              fetchVMs();
+            }
+            else {
+              throw new Error(`Error ${res.status}`);
             }
         })
-        .catch((err) => console.log(err))
+        .catch((err) => {
+          toast.dismiss();
+          toast.error("Failed to create PC due to a server error.", {
+            description: err.message
+          });
+        })
   }
 
   return (
