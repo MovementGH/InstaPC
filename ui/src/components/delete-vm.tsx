@@ -22,6 +22,9 @@ export default function DeleteVM({ id, name, os, fetchVMs }: { id: string, name:
     const [dialogOpen, setDialogOpen] = useState(false);
 
     function tryDelete() {
+        toast.loading(`Deleting ${name}...`);
+        setDialogOpen(false);
+        
         fetch(`${API_ROUTE}/vm/${id}`, {
             method: "DELETE",
             headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
@@ -40,9 +43,6 @@ export default function DeleteVM({ id, name, os, fetchVMs }: { id: string, name:
                 toast.error("Failed to delete PC due to a server error.", {
                     description: err.message
                 });
-            })
-            .finally(() => {
-                setDialogOpen(false);
             })
     }
 
