@@ -6,7 +6,6 @@ import { VMData } from "@/entities";
 import { API_ROUTE } from "@/lib/utils";
 import { useAuthInfo } from '@propelauth/react';
 
-import { OS } from "@/entities";
 
 export default function VMList() {
     const authInfo = useAuthInfo();

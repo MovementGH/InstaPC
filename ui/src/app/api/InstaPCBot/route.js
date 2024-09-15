@@ -1,5 +1,5 @@
 import Groq from "groq-sdk";
-import { OS } from "@/entities";
+import { MIN_DISK, MIN_MEM } from "@/entities";
 const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY });
 
 let conversationHistory = [];
@@ -45,16 +45,16 @@ export async function POST(req) {
         {
             "name": "VM Name",
             "os": "operating system select from existing os values in ${OS_values}",
-            "memory": 0 (value should be in megabytes, MIN - ),
+            "memory": 0 (value should be in megabytes, MIN - ${MIN_MEM}),
             "cores": 0,
-            "disk": 0 (value should be in gigabytes)
+            "disk": 0 (value should be in gigabytes, MIN - ${MIN_DISK})
         }
 
         Ensure all fields are filled using best judgment based on the user's request and conversation history.
         For the name of the virtual machine, generate an appropriate name based on intended use.
         Do not include any comments in the JSON object.
 
-        After the JSON object, provide a brief explanation for each specification choice.
+        After the JSON object, provide a brief explanation of 20 words for each specification choice.
         Format your explanations like this:
 
         Explanations:
