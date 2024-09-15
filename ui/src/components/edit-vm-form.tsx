@@ -15,8 +15,8 @@ export default function EditVMForm({ vmData, fetchVMs }: { vmData: VMData, fetch
 
     toast.loading(`Applying changes to '${vmData.name}'...`);
 
-    fetch(`${API_ROUTE}/vm`, { 
-        method: "POST",
+    fetch(`${API_ROUTE}/vm/${vmData.id}`, { 
+        method: "PATCH",
         body: JSON.stringify(body),
         headers: {'content-type': 'application/json', authorization: `Bearer ${authInfo.accessToken}`},
     })
