@@ -119,9 +119,12 @@ async function DeleteVMContainer(vm, cleanupFiles = true) {
 async function StartVM(vm) {
     console.log(`Starting VM "${vm.name}" (${vm.id})`);
 
-    await RunCommand(`docker network disconnect instapc vm-${vm.id}`).catch(err => console.error(err.stderr));
-    await RunCommand(`docker network disconnect bridge vm-${vm.id}`).catch(err => console.error(err.stderr));
-    await RunCommand(`docker network connect instapc vm-${vm.id}`).catch(err => console.error(err.stderr));
+    if(JSON.parse((await RunCommand(`docker inspect vm-${vm.id}`).catch(() => null)))?.State?.Running)
+        return;
+
+    await RunCommand(`docker network disconnect instapc vm-${vm.id}`).catch(() => {});
+    await RunCommand(`docker network disconnect bridge vm-${vm.id}`).catch(() => {});
+    await RunCommand(`docker network connect instapc vm-${vm.id}`).catch(() => {});
     await RunCommand(`docker start vm-${vm.id}`).catch(error => {
         if(error.stderr.match('No such container'))
             CreateVMContainer(vm).then(() => StartVM(vm));
@@ -332,13 +335,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-// app.use('/vm/', requireUser);
-// app.use('/vms/', requireUser);
-app.use('/', (req, res, next) => {
-    req.user = { userId: "7e3831c5-7855-41c8-9d89-3b8babecf5d7" };
-    next();
-});
-app.post('/chatbot', Chatbot);
+app.use('/vm/', requireUser);
+app.use('/vms/', requireUser);
+app.post('/chatbot', requireUser, Chatbot);
 app.use('/vm/:id', EnsureVMOwnership);
 app.get('/vms', GetVMs);
 app.get('/vm/:id', GetVM);
